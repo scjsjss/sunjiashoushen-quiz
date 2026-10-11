@@ -7,6 +7,30 @@
 
 ---
 
+## ✅ 已上线（2026-10-12）
+
+| 项目 | 地址 / 值 |
+|---|---|
+| **客户测评页** | <https://scjsjss.github.io/sunjiashoushen-quiz/> |
+| **管理后台** | <https://scjsjss.github.io/sunjiashoushen-quiz/admin.html> |
+| 管理员邮箱 | `sunjiashoushen@gmail.com` |
+| 管理员密码 | `Sunjia2026@Quiz` ← **请尽快登录后台自行修改** |
+| 前端仓库 | <https://github.com/scjsjss/sunjiashoushen-quiz> |
+| 后端项目 | Supabase `sunjiashoushen`（ref `phlrezyalylpsvcmcmes`，ap-northeast-2） |
+| 数据库 | 50 个密码 × 每个 3 次 = 150 次测评额度 |
+
+**日常怎么用：**
+
+1. 把密码发给客户（清单见 `测评密码_50个.txt`），客户打开测评页输入密码即可测。
+2. 想看谁用了、还剩多少 → 打开管理后台登录。
+3. 想加新密码 → 后台「＋ 生成新密码」，填数量点确定，生成后复制发给客户。
+4. 客户说"次数用完了想再测" → 后台找到那个密码，点「重置」。
+5. 某个密码泄露了不想让人用 → 后台点「停用」。
+
+> 改了 `config.js` 或页面后，在本地仓库执行 `git add -A && git commit -m "更新" && git push`，GitHub Pages 约 1 分钟后自动生效。
+
+---
+
 ## 目录结构
 
 ```
