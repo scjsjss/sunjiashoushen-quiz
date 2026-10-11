@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#0f8f7a">
+<title>精神状态体检报告 · 孙家瘦身</title>
+<style>
+  :root{
+    --ink:#111827; --ink2:#374151; --ink3:#6b7280; --ink4:#9ca3af;
+    --line:#e5e7eb; --line2:#f3f4f6;
+    --bg:#ffffff; --bg2:#f7f9fa; --bg3:#eef4f3;
+    --brand:#0f8f7a; --brand-d:#0a6b5c; --brand-l:#e6f7f3;
+    --red:#d92d3c; --red-l:#fdeff0;
+    --amber:#c8860d; --amber-l:#fdf5e4;
+    --green:#1a8f5f; --green-l:#e9f7f0;
+    --radius:16px; --radius-s:10px;
+    --shadow:0 1px 2px rgba(16,24,40,.05),0 8px 24px -10px rgba(16,24,40,.14);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  html{-webkit-text-size-adjust:100%}
+  html,body{margin:0; padding:0}
+  body{background:var(--bg2); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Segoe UI",Roboto,sans-serif;
+    font-size:15px; line-height:1.7; -webkit-font-smoothing:antialiased; overscroll-behavior-y:none}
+  .app{max-width:600px; margin:0 auto; padding:0 18px calc(48px + env(safe-area-inset-bottom)); min-height:100vh}
+  .screen{display:none} .screen.on{display:block}
+
+  /* ---------- 通用按钮 ---------- */
+  .btn{display:block; width:100%; border:none; border-radius:13px; padding:16px;
+    font-size:16.5px; font-weight:800; cursor:pointer; font-family:inherit;
+    background:linear-gradient(135deg,#0f8f7a,#3fc4a8); color:#fff; letter-spacing:.01em;
+    box-shadow:0 6px 18px -6px rgba(15,143,122,.55); transition:transform .12s; min-height:52px}
+  .btn:active{transform:scale(.985)}
+  .btn[disabled]{opacity:.5; pointer-events:none}
+  .btn.ghost{background:var(--bg); color:var(--ink2); border:1px solid var(--line); box-shadow:none;
+    font-size:14.5px; padding:14px; min-height:48px}
+  .btn.ghost:active{background:var(--bg2)}
+  .btn.gold{background:linear-gradient(135deg,#e0a020,#c8860d); box-shadow:0 6px 18px -6px rgba(200,134,13,.6);
+    font-size:15.5px; padding:15px; min-height:50px}
+
+  /* ---------- 密码门禁页 ---------- */
+  .gate{padding:52px 0 10px; text-align:center}
+  .gate .brand{display:inline-block; font-size:12px; letter-spacing:.2em; font-weight:800;
+    color:var(--brand-d); background:var(--brand-l); border:1px solid #c8e8e0;
+    padding:5px 14px; border-radius:99px; margin-bottom:24px}
+  .gate h1{font-size:26px; line-height:1.35; font-weight:800; margin:0 0 10px; letter-spacing:-.02em}
+  .gate p.sub{font-size:14px; color:var(--ink3); margin:0 0 28px; line-height:1.7}
+  .code-input{width:100%; border:1.5px solid var(--line); border-radius:14px; padding:17px 14px;
+    font-size:22px; font-weight:800; text-align:center; letter-spacing:.14em;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    color:var(--ink); background:var(--bg); outline:none; transition:border-color .15s, box-shadow .15s;
+    min-height:62px}
+  .code-input:focus{border-color:var(--brand); box-shadow:0 0 0 4px var(--brand-l)}
+  .code-input::placeholder{letter-spacing:.02em; font-size:15px; font-weight:600; color:var(--ink4)}
+  .gate-msg{min-height:24px; font-size:13px; color:var(--red); margin:12px 0 10px; font-weight:600; line-height:1.5}
+  .gate-msg.ok{color:var(--green)}
+  .gate-foot{margin-top:24px; font-size:12px; color:var(--ink4); line-height:1.9}
+  .gate-foot a{color:var(--brand-d); text-decoration:none; font-weight:700}
+  .shake{animation:shake .42s}
+  @keyframes shake{0%,100%{transform:translateX(0)}18%{transform:translateX(-8px)}
+    38%{transform:translateX(8px)}58%{transform:translateX(-5px)}78%{transform:translateX(5px)}}
+
+  /* ---------- 剩余次数徽标 ---------- */
+  .remain{display:inline-flex; align-items:center; gap:8px; background:var(--brand-l); color:var(--brand-d);
+    border:1px solid #c8e8e0; border-radius:99px; padding:7px 16px; font-size:13px; font-weight:800; margin-bottom:20px}
+  .remain i{width:7px; height:7px; border-radius:50%; background:var(--brand); display:block; flex:0 0 auto}
+  .remain.zero{background:var(--red-l); color:var(--red); border-color:#f6cfd4}
+  .remain.zero i{background:var(--red)}
+
+  /* ---------- 开始页 ---------- */
+  .cover{padding:34px 0 10px; text-align:center}
+  .cover h1{font-size:28px; line-height:1.32; font-weight:800; margin:0 0 12px; letter-spacing:-.02em}
+  .cover h1 em{font-style:normal; color:var(--brand-d)}
+  .cover p.sub{font-size:14.5px; color:var(--ink3); margin:0 0 24px; line-height:1.7}
+  .cover .facts{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:0 0 22px}
+  .cover .facts div{background:var(--bg); border:1px solid var(--line); border-radius:var(--radius-s); padding:13px 8px}
+  .cover .facts b{display:block; font-size:18px; color:var(--brand-d); font-weight:800; line-height:1.2}
+  .cover .facts span{font-size:11.5px; color:var(--ink3)}
+  .notice{background:var(--bg); border:1px solid var(--line); border-left:3px solid var(--brand);
+    border-radius:var(--radius-s); padding:14px 16px; font-size:12.6px; color:var(--ink3);
+    line-height:1.7; text-align:left; margin:18px 0 0}
+  .notice b{color:var(--ink2)}
+
+  /* ---------- 答题页 ---------- */
+  .qtop{position:sticky; top:0; background:rgba(247,249,250,.94); backdrop-filter:blur(10px);
+    padding:16px 0 12px; z-index:10; border-bottom:1px solid var(--line2)}
+  .qtop .row{display:flex; align-items:center; gap:12px}
+  .qtop .back{border:none; background:none; font-size:22px; color:var(--ink3); cursor:pointer;
+    padding:4px 10px; font-family:inherit; line-height:1; min-height:40px}
+  .qtop .back:disabled{opacity:.25}
+  .qtop .prog{flex:1; height:7px; background:#e6ebea; border-radius:99px; overflow:hidden}
+  .qtop .prog i{display:block; height:100%; width:0; background:linear-gradient(90deg,#0f8f7a,#3fc4a8);
+    border-radius:99px; transition:width .3s ease}
+  .qtop .cnt{font-size:12.5px; color:var(--ink3); font-variant-numeric:tabular-nums; font-weight:700; min-width:46px; text-align:right}
+  .qwrap{padding:28px 0 10px}
+  .qwrap .dimtag{display:inline-block; font-size:11.5px; color:var(--brand-d); background:var(--brand-l);
+    padding:3px 10px; border-radius:99px; font-weight:700; margin-bottom:14px}
+  .qwrap h2{font-size:19.5px; line-height:1.5; font-weight:750; margin:0 0 22px; letter-spacing:-.01em}
+  .opts{display:flex; flex-direction:column; gap:11px}
+  .opt{background:var(--bg); border:1.5px solid var(--line); border-radius:13px; padding:15px 17px;
+    font-size:14.6px; color:var(--ink2); cursor:pointer; text-align:left; font-family:inherit;
+    line-height:1.6; transition:all .14s; display:flex; gap:12px; align-items:flex-start; min-height:56px}
+  .opt .dot{flex:0 0 auto; width:20px; height:20px; border-radius:50%; border:2px solid #d6dcda;
+    margin-top:1px; transition:all .14s}
+  .opt:active{border-color:var(--brand); background:var(--brand-l)}
+  .opt.sel{border-color:var(--brand); background:var(--brand-l); color:var(--brand-d); font-weight:600}
+  .opt.sel .dot{border-color:var(--brand); background:var(--brand); box-shadow:inset 0 0 0 3px #fff}
+
+  /* ---------- 结果页 ---------- */
+  .sharebar{background:linear-gradient(135deg,#0f8f7a,#2fb99a); color:#fff;
+    border-radius:var(--radius); padding:15px 17px; margin-top:20px;
+    display:flex; align-items:center; gap:13px; box-shadow:var(--shadow)}
+  .sharebar .sb-t{flex:1; font-size:12.8px; line-height:1.55; opacity:.95}
+  .sharebar .sb-t b{display:block; font-size:14.6px; margin-bottom:2px; opacity:1}
+  .sharebar button{border:none; background:#fff; color:var(--brand-d); font-weight:800;
+    font-size:13px; padding:11px 14px; border-radius:99px; cursor:pointer; font-family:inherit; white-space:nowrap}
+  .report{background:var(--bg); border:1px solid var(--line); border-radius:var(--radius);
+    padding:26px 22px; margin-top:20px; box-shadow:var(--shadow)}
+  .rhead{text-align:center; padding-bottom:18px; border-bottom:2px solid var(--ink); margin-bottom:20px}
+  .rhead h2{font-size:21px; font-weight:800; margin:0 0 6px; letter-spacing:.06em}
+  .rhead .meta{font-size:11.5px; color:var(--ink3); letter-spacing:.04em}
+  .dx{text-align:center; margin:0 0 22px}
+  .dx .lb{font-size:11.5px; color:var(--ink3); letter-spacing:.14em; margin-bottom:10px}
+  .dx .nm{font-size:29px; font-weight:800; letter-spacing:-.02em; color:var(--brand-d); line-height:1.2}
+  .dx .tl{font-size:14px; color:var(--ink2); margin-top:10px; line-height:1.65}
+  .dx .score{margin-top:16px; display:inline-block; background:var(--bg3); border-radius:99px;
+    padding:6px 18px; font-size:13px; color:var(--ink2)}
+  .dx .score b{color:var(--brand-d); font-size:16px; font-weight:800}
+  .sec-t{font-size:13px; font-weight:800; letter-spacing:.1em; color:var(--ink3); margin:26px 0 12px;
+    display:flex; align-items:center; gap:9px}
+  .sec-t::after{content:""; flex:1; height:1px; background:var(--line)}
+  .radar-wrap{display:flex; justify-content:center; padding:4px 0 8px}
+  canvas{max-width:100%}
+  table.idx{width:100%; border-collapse:collapse; font-size:13.4px}
+  table.idx th{font-size:11.5px; color:var(--ink3); font-weight:700; text-align:left;
+    padding:8px 6px; border-bottom:1px solid var(--line); letter-spacing:.03em}
+  table.idx td{padding:11px 6px; border-bottom:1px solid var(--line2); vertical-align:middle}
+  table.idx td.n{font-variant-numeric:tabular-nums; font-weight:800; font-size:15px; text-align:right; white-space:nowrap}
+  table.idx .nmcell{font-weight:700; color:var(--ink)}
+  table.idx .ref{font-size:11.5px; color:var(--ink4); font-weight:400; display:block}
+  .pill{display:inline-block; font-size:11.5px; font-weight:800; padding:2px 9px; border-radius:99px; white-space:nowrap}
+  .pill.ok{background:var(--green-l); color:var(--green)}
+  .pill.low{background:var(--amber-l); color:var(--amber)}
+  .pill.warn{background:var(--red-l); color:var(--red)}
+  .bar-mini{height:6px; border-radius:99px; background:#eef1f0; overflow:hidden; margin-top:6px; min-width:64px}
+  .bar-mini i{display:block; height:100%; border-radius:99px}
+  .abn{background:var(--bg2); border:1px solid var(--line); border-radius:var(--radius-s);
+    padding:16px 17px; margin-bottom:12px}
+  .abn .ah{display:flex; align-items:center; gap:9px; margin-bottom:9px}
+  .abn .ah .lv{font-size:11.5px; font-weight:800; padding:2px 9px; border-radius:99px}
+  .abn .ah .nm{font-weight:800; font-size:15px}
+  .abn .ah .vl{margin-left:auto; font-size:14px; font-weight:800; font-variant-numeric:tabular-nums}
+  .abn p{margin:0; font-size:13.4px; color:var(--ink2); line-height:1.75}
+  .abn .th{margin-top:10px; font-size:12px; color:var(--ink3); padding-top:9px; border-top:1px dashed var(--line)}
+  .abn .th b{color:var(--brand-d)}
+  .advice{list-style:none; padding:0; margin:0}
+  .advice li{position:relative; padding-left:30px; margin-bottom:13px; font-size:13.8px; color:var(--ink2); line-height:1.7}
+  .advice li::before{content:""; position:absolute; left:0; top:6px; width:16px; height:16px;
+    border-radius:50%; background:var(--brand-l); border:1.5px solid var(--brand)}
+  .advice li b{color:var(--ink)}
+  .quote{background:linear-gradient(135deg,#0f8f7a,#2fb99a); color:#fff; border-radius:var(--radius-s);
+    padding:20px 22px; margin:20px 0; font-size:15.5px; line-height:1.7; font-weight:600; letter-spacing:.01em}
+  .quote span{display:block; font-size:11.5px; opacity:.85; font-weight:400; margin-top:9px; letter-spacing:.06em}
+  details{border:1px solid var(--line); border-radius:var(--radius-s); margin:9px 0; background:var(--bg2)}
+  details summary{cursor:pointer; padding:13px 15px; font-weight:700; font-size:13.4px; list-style:none; color:var(--ink2)}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"+ "; color:var(--brand); font-weight:800}
+  details[open] summary::before{content:"− "}
+  details .dc{padding:0 15px 14px; font-size:12.8px; color:var(--ink3); line-height:1.75}
+  details .dc b{color:var(--brand-d)}
+  .disc{background:var(--bg3); border:1px dashed #c5dbd6; border-radius:var(--radius-s);
+    padding:14px 16px; font-size:11.8px; color:var(--ink3); line-height:1.7; margin-top:20px}
+  .disc b{color:var(--brand-d)}
+
+  /* ---------- 操作区 ---------- */
+  .actions{display:flex; flex-direction:column; gap:10px; margin-top:4px}
+  .act-row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .btn-note{font-size:11.8px; color:var(--ink4); text-align:center; margin-top:2px; line-height:1.6}
+  .poster-box{margin-top:14px; background:var(--bg2); border:1px solid var(--line);
+    border-radius:var(--radius-s); padding:14px}
+  .poster-box img{width:100%; border-radius:10px; display:block; box-shadow:var(--shadow)}
+  .poster-tip{font-size:12.6px; color:var(--ink3); line-height:1.7; margin:12px 0 10px; text-align:center}
+  .poster-tip b{color:var(--brand-d)}
+
+  /* ---------- 弹窗 ---------- */
+  .modal{position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(17,24,39,.55); z-index:110;
+    display:none; align-items:flex-end; justify-content:center}
+  .modal.on{display:flex}
+  .sheet{background:#fff; width:100%; max-width:600px; border-radius:20px 20px 0 0;
+    padding:22px 20px calc(22px + env(safe-area-inset-bottom)); box-sizing:border-box;
+    max-height:88vh; overflow-y:auto; animation:up .26s ease}
+  @keyframes up{from{transform:translateY(34px); opacity:.5} to{transform:translateY(0); opacity:1}}
+  .sheet-hd{display:flex; align-items:center; margin-bottom:16px}
+  .sheet-hd b{font-size:18px; font-weight:800; letter-spacing:-.01em}
+  .sheet-x{margin-left:auto; border:none; background:var(--bg2); color:var(--ink3); width:34px; height:34px;
+    border-radius:50%; font-size:16px; cursor:pointer; font-family:inherit; line-height:1; flex:0 0 auto}
+  .of-hero{background:linear-gradient(135deg,#e0a020,#c8860d); border-radius:14px; padding:20px 18px;
+    text-align:center; color:#fff; margin-bottom:16px}
+  .of-hero .n{font-size:40px; font-weight:800; line-height:1.05; letter-spacing:-.02em}
+  .of-hero .n small{font-size:17px; font-weight:700; margin-left:5px}
+  .of-hero .t{font-size:13px; opacity:.92; margin-top:7px}
+  .of-p{font-size:13.8px; color:var(--ink2); line-height:1.8; margin:0 0 15px}
+  .of-steps{list-style:none; padding:0; margin:0 0 16px; counter-reset:os}
+  .of-steps li{position:relative; padding-left:29px; font-size:13.4px; color:var(--ink2);
+    line-height:1.6; margin-bottom:9px; counter-increment:os}
+  .of-steps li::before{content:counter(os); position:absolute; left:0; top:2px; width:19px; height:19px;
+    border-radius:50%; background:#c8860d; color:#fff; font-size:11px; font-weight:800;
+    display:flex; align-items:center; justify-content:center}
+  .of-wx{background:#fff8e9; border:1px dashed #e8d5a8; border-radius:12px; padding:15px;
+    text-align:center; margin-bottom:14px}
+  .of-wx .lb{font-size:11.5px; color:#a8873f; letter-spacing:.08em; margin-bottom:7px}
+  .of-wx .id{font-size:20px; font-weight:800; color:#8a5c00; letter-spacing:.02em; word-break:break-all}
+  .of-note{font-size:11.8px; color:var(--ink4); text-align:center; margin-top:12px; line-height:1.7}
+  .cs-ta{width:100%; height:150px; border:1px solid var(--line); border-radius:10px;
+    padding:12px; font-family:inherit; font-size:13px; line-height:1.65; color:var(--ink2);
+    resize:none; background:var(--bg2); margin-bottom:12px; -webkit-user-select:text; user-select:text}
+  .cs-sub{font-size:12.2px; color:var(--ink3); margin-bottom:12px; line-height:1.6}
+
+  /* ---------- toast ---------- */
+  .toast{position:fixed; left:50%; bottom:calc(36px + env(safe-area-inset-bottom));
+    transform:translate(-50%,18px); background:rgba(17,24,39,.93); color:#fff;
+    font-size:13.4px; font-weight:600; padding:12px 20px; border-radius:99px;
+    opacity:0; pointer-events:none; transition:opacity .22s, transform .22s; z-index:200;
+    max-width:84vw; text-align:center; line-height:1.5}
+  .toast.on{opacity:1; transform:translate(-50%,0)}
+  .toast.bad{background:rgba(178,32,46,.95)}
+  .foot{text-align:center; color:var(--ink4); font-size:11.5px; padding:26px 10px 0; line-height:1.9}
+  .foot a{color:var(--brand-d); text-decoration:none; font-weight:700}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ================= 密码门禁 ================= -->
+  <section class="screen on" id="scr-gate">
+    <div class="gate">
+      <span class="brand" id="gate-brand">孙家瘦身</span>
+      <h1>精神状态<br>体检报告</h1>
+      <p class="sub">这是孙家瘦身客户专属的测评。<br>请输入发给你的测评密码开始。</p>
+      <input class="code-input" id="code-input" type="text" inputmode="text" autocomplete="off"
+             autocapitalize="characters" spellcheck="false" placeholder="请输入测评密码" maxlength="9">
+      <div class="gate-msg" id="gate-msg"></div>
+      <button class="btn" id="btn-unlock">开始体检</button>
+      <div class="gate-foot">
+        每个密码最多可测 <b>3 次</b>，用完为止<br>
+        <a href="https://sunjiashoushen.com" target="_blank" rel="noopener">sunjiashoushen.com</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 开始页 ================= -->
+  <section class="screen" id="scr-intro">
+    <div class="cover">
+      <div class="remain" id="remain-badge"><i></i><span>剩余可测次数 3 次</span></div>
+      <h1>精神状态<br><em>体检报告</em></h1>
+      <p class="sub">像做一次体检一样，给你的精神状态做一次系统检查。<br>28 道题，约 5 分钟，出一份属于你的报告。</p>
+      <div class="facts">
+        <div><b>28</b><span>道情境题</span></div>
+        <div><b>7</b><span>项精神指标</span></div>
+        <div><b>13</b><span>种诊断类型</span></div>
+      </div>
+      <button class="btn" id="btn-start">开始测评</button>
+      <div class="notice">
+        <b>关于这份报告</b><br>
+        本测评的 7 项指标参考了职业倦怠、快感缺失、反刍思维、知觉压力、心理韧性等心理学研究中的成熟概念，题目与常模为本次自研，<b>不是临床量表，也不能用于任何医学诊断</b>。<br>
+        如果你长期情绪低落、失眠、对一切都失去兴趣，请直接寻求专业帮助——这份报告只能提醒你，不能替代医生。
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 答题页 ================= -->
+  <section class="screen" id="scr-quiz">
+    <div class="qtop">
+      <div class="row">
+        <button class="back" id="btn-back" aria-label="上一题">‹</button>
+        <div class="prog"><i id="prog-bar"></i></div>
+        <div class="cnt" id="prog-cnt">1 / 28</div>
+      </div>
+    </div>
+    <div class="qwrap">
+      <span class="dimtag" id="q-dim"></span>
+      <h2 id="q-text"></h2>
+      <div class="opts" id="q-opts"></div>
+    </div>
+  </section>
+
+  <!-- ================= 结果页 ================= -->
+  <section class="screen" id="scr-result">
+    <div id="sharebar"></div>
+    <div class="report" id="report"></div>
+    <div class="foot">孙家瘦身 · 精神状态体检报告 v2.0<br>本报告由自研测评模型生成，不构成医学诊断</div>
+  </section>
+
+</div>
+
+<!-- ================= 好评有礼弹窗 ================= -->
+<div class="modal" id="modal-offer">
+  <div class="sheet">
+    <div class="sheet-hd"><b>好评有礼</b><button class="sheet-x" data-close="modal-offer">✕</button></div>
+    <div class="of-hero">
+      <div class="n">1<small>元</small></div>
+      <div class="t">好评返现，感谢你的支持</div>
+    </div>
+    <p class="of-p">如果这份报告对你有帮助，麻烦到店铺给我们留一个好评～<br>截图发给客服，立返 <b>1 元</b>现金红包。</p>
+    <ol class="of-steps">
+      <li>打开店铺订单，给本次服务一个好评</li>
+      <li>把好评页面截图保存下来</li>
+      <li>添加客服微信，把截图发过去</li>
+      <li>客服核对后，1 元返现马上到账</li>
+    </ol>
+    <div class="of-wx">
+      <div class="lb">客 服 微 信</div>
+      <div class="id" id="of-wechat">—</div>
+    </div>
+    <div class="actions">
+      <button class="btn gold" id="btn-copy-wx">复制客服微信号</button>
+      <button class="btn ghost" data-close="modal-offer">我知道了</button>
+    </div>
+    <div class="of-note">同一订单仅限领取一次 · 最终解释权归孙家瘦身所有</div>
+  </div>
+</div>
+
+<!-- ================= 手动复制弹窗 ================= -->
+<div class="modal" id="modal-copy">
+  <div class="sheet">
+    <div class="sheet-hd"><b id="copy-title">长按下面的文字，全选复制</b><button class="sheet-x" data-close="modal-copy">✕</button></div>
+    <div class="cs-sub">浏览器不允许自动复制，已为你选中全文——长按文字框选择「全选 → 复制」即可。</div>
+    <textarea class="cs-ta" id="copy-ta" readonly></textarea>
+    <button class="btn ghost" data-close="modal-copy">关闭</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="config.js"></script>
+<script>
+/* =========================================================
+   0a. 品牌配置（来自同目录 config.js）
+   ========================================================= */
+const CFG = window.APP_CONFIG || {};
+const CONFIG = {
+  brand:     CFG.brand    || '孙家瘦身',
+  site:      CFG.site     || 'sunjiashoushen.com',
+  siteUrl:   CFG.siteUrl  || 'https://sunjiashoushen.com',
+  wechat:    CFG.wechat   || '',
+  cashback:  CFG.cashback || '1',
+  shopUrl:   CFG.shopUrl  || '',
+  topics:    CFG.topics   || '',
+  published: CFG.published || ''
+};
+
+/* =========================================================
+   0b. 后端配置（Supabase）
+   ---------------------------------------------------------
+   密码不再写在前端！校验和计次全部在 Supabase 服务端完成，
+   别人查看网页源码也拿不到任何密码。
+   配置项在 config.js 里，本文件不用改。
+   ========================================================= */
+const SUPABASE = {
+  url:     CFG.supabaseUrl     || '',
+  anonKey: CFG.supabaseAnonKey || ''
+};
+const ACCESS = {
+  keyCode: 'sj_quiz_code_v1',   // 仅用于记住「上次用过的密码」，方便老用户回访
+  timeout: 12000                // 单次请求超时（毫秒）
+};
+
+/* =========================================================
+   1. 存储与密码工具
+   ========================================================= */
+const Store = (function(){
+  let mem = {}, ok = true;
+  try { localStorage.setItem('__t','1'); localStorage.removeItem('__t'); } catch(e){ ok = false; }
+  return {
+    get(k){ try { return ok ? localStorage.getItem(k) : (mem[k] || null); } catch(e){ return mem[k] || null; } },
+    set(k,v){ try { if(ok) localStorage.setItem(k,v); else mem[k]=v; } catch(e){ mem[k]=v; } }
+  };
+})();
+const normCode = s => String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+
+/* ---- Supabase 数据接口（直接用 REST，不依赖任何外部脚本） ---- */
+let currentRemain = 0;      // 服务端返回的剩余次数（内存缓存）
+
+function apiReady(){
+  return !!(SUPABASE.url && SUPABASE.anonKey &&
+            /^https?:\/\//.test(SUPABASE.url) &&
+            SUPABASE.url.indexOf('YOUR-PROJECT-REF') < 0 &&
+            SUPABASE.anonKey.length > 20 &&
+            SUPABASE.anonKey.indexOf('YOUR-ANON') < 0);
+}
+function rpc(name, body){
+  const base = SUPABASE.url.replace(/\/+$/,'');
+  const ctl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+  let timer = null;
+  if(ctl) timer = setTimeout(()=>{ try{ ctl.abort(); }catch(e){} }, ACCESS.timeout);
+  return fetch(base + '/rest/v1/rpc/' + name, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE.anonKey,
+      'Authorization': 'Bearer ' + SUPABASE.anonKey,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body || {}),
+    signal: ctl ? ctl.signal : undefined
+  }).then(function(r){
+    if(timer) clearTimeout(timer);
+    if(!r.ok) return r.text().then(function(txt){ throw new Error('HTTP ' + r.status + ' ' + String(txt).slice(0,200)); });
+    return r.json();
+  }).catch(function(e){
+    if(timer) clearTimeout(timer);
+    throw e;
+  });
+}
+function verifyCode(code){
+  if(!apiReady()) return Promise.resolve({ ok:false, reason:'offline' });
+  return rpc('verify_code', { p_code: normCode(code) })
+    .then(function(r){ return r || { ok:false, reason:'invalid' }; })
+    .catch(function(e){ return { ok:false, reason:'network', detail:String(e && e.message || e) }; });
+}
+function consumeCode(code, typeKey, avg){
+  if(!apiReady()) return Promise.resolve({ ok:false, reason:'offline' });
+  return rpc('consume_code', { p_code: normCode(code), p_type: typeKey || null, p_avg: (avg === 0 || avg) ? avg : null })
+    .then(function(r){ return r || { ok:false, reason:'invalid' }; })
+    .catch(function(e){ return { ok:false, reason:'network', detail:String(e && e.message || e) }; });
+}
+/* 剩余次数统一读服务端缓存值（不再有本地累加，无法通过清缓存绕过） */
+function remainOf(){ return currentRemain; }
+function reasonText(r){
+  switch(r && r.reason){
+    case 'empty':     return '请输入测评密码';
+    case 'invalid':   return '密码不正确，请检查后重新输入';
+    case 'exhausted': return '这个密码的 3 次测评机会已经用完了';
+    case 'disabled':  return '这个密码已停用，请联系客服';
+    case 'network':   return '网络连接失败，请检查网络后重试';
+    case 'offline':   return '测评服务尚未配置，请联系客服';
+    default:          return '验证失败，请稍后重试';
+  }
+}
+
+/* =========================================================
+   2. 维度定义（每项对应一个真实的心理学构念）
+   ========================================================= */
+const DIMS = [
+  { key:'emo', name:'情绪稳定度', short:'情绪',
+    theory:'职业倦怠模型 · 情绪耗竭维度（Maslach Burnout Inventory）',
+    note:'Maslach 把职业倦怠拆成三个维度，其中「情绪耗竭」是最核心的一个——它指的不是你脾气差，而是你的情绪储备被长期透支。耗竭的人往往外表正常，内里已经空了。' },
+  { key:'joy', name:'快乐感知力', short:'快乐',
+    theory:'快感缺失（Anhedonia）· DSM 抑郁两大核心症状之一',
+    note:'抑郁的诊断标准里有两个核心症状：情绪低落，和快感缺失。后者指「对本来能带来快乐的事提不起兴趣」。它常被忽略，因为麻木不喊疼。' },
+  { key:'foc', name:'专注续航力', short:'专注',
+    theory:'反刍思维（Rumination）· Nolen-Hoeksema 反应风格理论',
+    note:'反刍思维指反复咀嚼同一件事，尤其是无法改变的过去。研究发现，它是预测抑郁最强的因素之一——比事件本身的严重程度更重要。' },
+  { key:'str', name:'压力耐受力', short:'抗压',
+    theory:'知觉压力（Perceived Stress）· Cohen 知觉压力量表',
+    note:'关键不是你身上压了多少事，而是你「觉得」自己扛不扛得住。同样的事情，有人当成挑战，有人当成威胁——这个差别决定了一切。' },
+  { key:'soc', name:'社交电量', short:'社交',
+    theory:'人格唤醒理论 · 内向者的社交恢复差异',
+    note:'人格心理学发现，内向者的神经系统基线唤醒水平更高，同样的社交刺激对他们是更强的输入，所以恢复更慢。这不是缺陷，是电量条长度的差异。' },
+  { key:'mng', name:'意义感', short:'意义',
+    theory:'生命意义感（Meaning in Life）· Steger 生命意义问卷',
+    note:'意义感缺失最典型的表现是：你照样上班、吃饭、回消息，但当问自己「这一切为了什么」时，答案是空白。它比情绪问题更隐蔽，也更持久。' },
+  { key:'res', name:'恢复力', short:'恢复',
+    theory:'心理韧性（Resilience）· Connor-Davidson 韧性量表',
+    note:'恢复力不是「扛得住」，而是「恢复得快」。它是所有心理指标里最可被训练的一项——因为它不由性格决定，而由具体的习惯构成。' }
+];
+
+/* =========================================================
+   3. 题库：28 道本土情境题（7 维 × 4 题）
+   ========================================================= */
+const QUESTIONS = [
+  // ===== 第 1 轮 =====
+  { d:'emo', q:'周日晚上十一点，你躺在床上，明天要上班。你脑子里在想什么？', o:[
+    { t:'该睡睡，明天的事明天说', s:4 },
+    { t:'想到就烦，但翻个身还能睡着', s:2 },
+    { t:'已经开始预演明天的会、要回的消息了', s:1 },
+    { t:'有点不想上班，但也就那样', s:3 } ]},
+  { d:'joy', q:'点了份有点贵的外卖，吃第一口的时候，你——', o:[
+    { t:'好吃，但也仅此而已', s:2 },
+    { t:'没什么感觉，就是完成一顿饭', s:1 },
+    { t:'会开心一会儿，还想拍张照发给朋友', s:4 },
+    { t:'挺满足的，值这个价', s:3 } ]},
+  { d:'foc', q:'深夜，你开始复盘白天说错的一句话。你会——', o:[
+    { t:'反复想，甚至模拟「当时应该说那句」', s:1 },
+    { t:'想一下就算了', s:3 },
+    { t:'想一会儿，然后强行转移注意力', s:2 },
+    { t:'基本不会复盘这种事', s:4 } ]},
+  { d:'str', q:'同时有三件事压在你头上，你会——', o:[
+    { t:'很焦虑，但硬着头皮一件件做', s:2 },
+    { t:'大脑空白，一件都推进不了', s:1 },
+    { t:'该干嘛干嘛，反正总有办法', s:4 },
+    { t:'列个清单，按顺序做', s:3 } ]},
+  { d:'soc', q:'参加完一场聚餐，你的感觉是——', o:[
+    { t:'有点累，但还行', s:2 },
+    { t:'像被抽干，回家要躺很久才缓过来', s:1 },
+    { t:'意犹未尽，还想续摊', s:4 },
+    { t:'挺充实的', s:3 } ]},
+  { d:'mng', q:'有人问你「最近在忙什么」，你心里的答案是——', o:[
+    { t:'忙，但不知道为什么忙', s:2 },
+    { t:'有几件我挺在意的事', s:4 },
+    { t:'不知道在忙什么，好像也没什么意义', s:1 },
+    { t:'忙一些具体的事，还行', s:3 } ]},
+  { d:'res', q:'遇到糟心事，你通常需要多久缓过来？', o:[
+    { t:'一两天', s:2 },
+    { t:'好几天，甚至更久', s:1 },
+    { t:'当场就能调整过来', s:4 },
+    { t:'睡一觉就好了', s:3 } ]},
+
+  // ===== 第 2 轮 =====
+  { d:'emo', q:'晚上九点，领导在群里 @ 你：「这个方案再改一下。」你的第一反应是——', o:[
+    { t:'有点烦躁，但还是会改', s:2 },
+    { t:'心里咯噔一下，立刻爬起来改，怕被挑毛病', s:1 },
+    { t:'回一句「收到，明天上午给您」，然后放下手机', s:4 },
+    { t:'明天再说，先不回', s:3 } ]},
+  { d:'joy', q:'刷到一个特别好笑的视频，你的反应是——', o:[
+    { t:'笑出声，还会转给朋友', s:4 },
+    { t:'嘴角动了一下，然后划走', s:1 },
+    { t:'觉得好笑，但懒得分享', s:2 },
+    { t:'笑完还会去翻这个博主的主页', s:3 } ]},
+  { d:'foc', q:'你工作时，大脑的「后台程序」在干嘛？', o:[
+    { t:'一直在放白天的尴尬瞬间和别人的评价', s:1 },
+    { t:'大部分时间能专注', s:3 },
+    { t:'偶尔走神，需要刻意拉回来', s:2 },
+    { t:'专注起来会忘记时间', s:4 } ]},
+  { d:'str', q:'还没到月底，但银行卡余额不太够了。你——', o:[
+    { t:'焦虑，但能撑', s:2 },
+    { t:'每天都要看一眼余额，睡不好', s:1 },
+    { t:'有点紧，但不太影响心情', s:3 },
+    { t:'该花花，船到桥头自然直', s:4 } ]},
+  { d:'soc', q:'一个不太熟的同事给你发来一条 60 秒的语音。你——', o:[
+    { t:'心里一沉，等很久才点开', s:1 },
+    { t:'直接点开听', s:3 },
+    { t:'先转成文字看', s:2 },
+    { t:'立刻回过去', s:4 } ]},
+  { d:'mng', q:'早上醒来的第一反应是——', o:[
+    { t:'没什么感觉，机械地起来', s:2 },
+    { t:'「又要开始一天了」，很沉', s:1 },
+    { t:'有事想做，甚至有点期待', s:4 },
+    { t:'有一两件今天要做的事', s:3 } ]},
+  { d:'res', q:'你有可以「说心里话」的人吗？', o:[
+    { t:'有一两个，但不常联系', s:2 },
+    { t:'没有，说了也没用', s:1 },
+    { t:'有，而且经常聊', s:4 },
+    { t:'有，需要的时候能找到', s:3 } ]},
+
+  // ===== 第 3 轮 =====
+  { d:'emo', q:'你最近一次情绪「崩掉」，是什么时候？', o:[
+    { t:'这个月有过', s:2 },
+    { t:'就在这几天', s:1 },
+    { t:'我很少情绪失控', s:4 },
+    { t:'记不清了，好像挺久了', s:3 } ]},
+  { d:'joy', q:'如果明天突然给你放一天假，什么都不用干，你会——', o:[
+    { t:'立刻能想到三件想做的事', s:4 },
+    { t:'不知道该干嘛，可能还是躺着刷手机', s:1 },
+    { t:'有几个想做的事，但也不着急', s:3 },
+    { t:'想休息，但提不起劲做任何事', s:2 } ]},
+  { d:'foc', q:'别人一句无心的话，你会——', o:[
+    { t:'琢磨一整天，怀疑是不是在说我', s:1 },
+    { t:'当时没感觉，事后才反应过来', s:3 },
+    { t:'会想一下，但很快就过去', s:2 },
+    { t:'基本不往心里去', s:4 } ]},
+  { d:'str', q:'一个你很在意的机会（升职、面试、考试）失败了。你——', o:[
+    { t:'难受几天，然后慢慢接受', s:2 },
+    { t:'会怀疑自己是不是不行，缓很久', s:1 },
+    { t:'有点失落，但很快翻篇', s:4 },
+    { t:'会分析原因，然后继续', s:3 } ]},
+  { d:'soc', q:'一个人待着的周末，你会——', o:[
+    { t:'觉得空虚无聊，又不想找人', s:1 },
+    { t:'挺享受的，有自己的节奏', s:3 },
+    { t:'会有点闷，但也能过', s:2 },
+    { t:'一个人待着特别舒服，充电满格', s:4 } ]},
+  { d:'mng', q:'如果现在让你许一个愿，你最想——', o:[
+    { t:'什么都不想，就让我歇着', s:1 },
+    { t:'有几个明确想要的东西', s:4 },
+    { t:'希望生活能有点变化', s:2 },
+    { t:'希望某件具体的事能成', s:3 } ]},
+  { d:'res', q:'当你搞砸一件事，你心里的第一个声音是——', o:[
+    { t:'「又来了」', s:2 },
+    { t:'「我怎么什么都做不好」', s:1 },
+    { t:'「下次注意」', s:3 },
+    { t:'「这次不行，换个方法试试」', s:4 } ]},
+
+  // ===== 第 4 轮 =====
+  { d:'emo', q:'朋友约你周末出去，你其实不太想去。你会——', o:[
+    { t:'硬着头皮去，全程强撑', s:1 },
+    { t:'直接说「这周想歇歇」', s:4 },
+    { t:'找个借口推掉，然后有点愧疚', s:2 },
+    { t:'看心情，想去就去，不想去就不去', s:3 } ]},
+  { d:'joy', q:'你有多久没有「特别期待」过一件事了？', o:[
+    { t:'挺久了，半年以上', s:2 },
+    { t:'最近就有，比如下周的某个安排', s:4 },
+    { t:'想不起来了', s:1 },
+    { t:'一两个月吧', s:3 } ]},
+  { d:'foc', q:'睡前那半小时，你脑子里最常出现的是——', o:[
+    { t:'今天没做好的事，一遍遍重放', s:1 },
+    { t:'明天的待办清单，反复排顺序', s:2 },
+    { t:'一些乱七八糟的念头，但不难受', s:3 },
+    { t:'想点开心的事，然后睡着', s:4 } ]},
+  { d:'str', q:'家里催你（结婚、考公、回家、生娃），你——', o:[
+    { t:'每次接完电话都要缓半天', s:1 },
+    { t:'敷衍过去，不当回事', s:3 },
+    { t:'很烦，但只能忍着', s:2 },
+    { t:'能平静地跟父母把话说开', s:4 } ]},
+  { d:'soc', q:'微信里躺着 99+ 条未读消息，你的第一反应是——', o:[
+    { t:'有点烦，想全部已读不回', s:1 },
+    { t:'挑重要的回，其他的就算了', s:2 },
+    { t:'一条条看完，该回的回复', s:3 },
+    { t:'没什么感觉，回就完了', s:4 } ]},
+  { d:'mng', q:'回头看这半年，你的感觉是——', o:[
+    { t:'想不起来自己做了什么', s:1 },
+    { t:'好像做了很多，又好像什么都没做', s:2 },
+    { t:'有些事还是有点意思的', s:3 },
+    { t:'有几件事让我挺有成就感的', s:4 } ]},
+  { d:'res', q:'如果今天过得特别糟，你会怎么处理？', o:[
+    { t:'一直憋着，到晚上更难受', s:1 },
+    { t:'硬扛，第二天继续', s:2 },
+    { t:'找人说说，或者做点别的分散一下', s:3 },
+    { t:'允许自己难受一会儿，然后该干嘛干嘛', s:4 } ]}
+];
+
+/* =========================================================
+   4. 结果类型（13 种）
+   ========================================================= */
+const TYPES = {
+  full:{ name:'满电清醒型', tag:'你不是不累，你是知道什么时候该停。',
+    body:'你的各项指标都落在参考区间之上。这不是运气——它通常意味着你目前的生活节律、社会支持和自我调节方式都在有效运转。心理学里把这种状态称为「心理繁荣」（Flourishing）：它不只是「没有症状」，而是同时具备活力、投入和意义感。\n需要提醒的是：满电不是常态，而是需要维护的结果。真正健康的人不是永远不累，而是能在电量掉到一半之前就发现，并且敢停下来。',
+    advice:['保持你现在的生活节律——它已经被证明有效，别轻易打破。','留意「过度透支」的早期信号：睡眠变浅、对小事失去耐心。','把有效的做法记下来（睡够几小时、每周运动几次），这是你的「充电说明书」。','如果你身边的人状态不好，你的稳定本身就是一种支持。'],
+    line:'我的精神状态体检报告：满电清醒型。不是不累，是知道什么时候该停。' },
+
+  selfco:{ name:'低耗自洽型', tag:'你不是没劲，你是把能耗调到了最低档。',
+    body:'你的各项指标不高，但也不低——它们在一个平稳的区间里。这不是「躺平」，也不是「抑郁」。\n心理学里有一个常被忽略的视角：降低对外界的情绪期待，是一种自我保护策略。你不是失去了活力，而是主动减少了不必要的消耗，从而避免受伤。\n真正的风险只有一个——低耗久了，可能会分不清「我选择这样」和「我只能这样」。定期问自己一句：这是我选的，还是我认了？',
+    advice:['保留你的低耗策略，但每月做一件「稍微有点期待」的小事。','区分「主动选择」和「被动认命」——前者是自由，后者是消耗。','如果某天你发现自己连「想要点什么」都想不出来，那是需要认真对待的信号。','不必强迫自己积极，但要守住底线：睡够、吃好、有人说话。'],
+    line:'我的精神状态体检报告：低耗自洽型。不是没劲，是把能耗调到了最低档。' },
+
+  steady:{ name:'均衡稳定型', tag:'没有哪一项特别亮，但也没有哪一项在拖后腿。',
+    body:'你的七项指标彼此接近，都落在正常区间里。这种「没有短板」的状态，比很多人想象的更难得——大多数人的消耗，都来自某一个维度的持续失血。\n需要留意的是：均衡也可能是「没有特别投入过什么」的结果。稳定是好的底盘，但如果长期没有一件事能让你明显提神，可以主动给自己加一点挑战或新鲜感。\n心理学上，稳定而不空虚的状态，通常来自「胜任感」和「关系感」同时在线——这两样都值得你继续维护。',
+    advice:['保持现有节律，同时给自己设一个「略有挑战」的小目标。','留意均衡是否变成了「平淡」——如果连续几个月没有任何事让你兴奋，值得警惕。','把有效的做法固化下来，它们才是你稳定的真正原因。','用你的稳定去支持身边的人，这也会反过来增强你的意义感。'],
+    line:'我的精神状态体检报告：均衡稳定型。没有哪一项特别亮，但也没有哪一项在拖后腿。' },
+
+  wave:{ name:'间歇性满电型', tag:'你的问题不是不稳定，是峰值太高、低谷太深。',
+    body:'你的指标起伏很大——有的很高，有的很低。这不是「不稳定」，而是一种典型的高敏感运转方式：你对某些事情能全情投入，对另一些事情则迅速耗竭。\n心理学上，这种模式常出现在高敏感人群（HSP）身上——他们的神经系统对外界刺激反应更强，因此峰值更高，低谷也更深。\n你的关键不是「让自己变得稳定」，而是学会识别：什么在给你充电，什么在放电。多数高敏感者的痛苦，来自长期待在一个持续放电的环境里，却以为自己有问题。',
+    advice:['列出三件「充到电」的事和三件「放到空」的事，把前者变成固定安排。','高敏感不是缺陷，但它需要更严格的能量预算——学会提前退出。','在状态好的时候不要用尽，留 20% 给不可预测的事。','不要用「别人能做到」来衡量自己，你们的神经系统配置不同。'],
+    line:'我的精神状态体检报告：间歇性满电型。不是不稳定，是峰值太高、低谷太深。' },
+
+  hidden:{ name:'隐性崩溃型', tag:'外人看你一切正常，只有你知道自己是靠意志力在撑。',
+    body:'你的情绪稳定度是七项里最低的，但其他指标可能都还正常——这就是「隐性崩溃」：外人看你一切正常，只有你自己知道，你是靠意志力在维持。\n心理学上，这对应 Maslach 职业倦怠模型里的「情绪耗竭」维度：你还没到崩溃，但情绪储备已经接近见底。\n这类状态最危险的地方在于——因为它不外显，所以没人会来帮你，包括你自己。你习惯了「我能扛」，于是每一次都在加码。你需要做的第一件事不是调整心态，而是主动说出来。',
+    advice:['挑一个信得过的人，说一次实话——不是抱怨，是告诉他你最近的真实状态。','给情绪找一个出口，而不是继续压：写下来、运动、或者哭一场都算。','减少一件你「本可以不接」的事。耗竭是靠减法解决的，不是靠意志力。','如果这种状态持续两周以上，认真考虑找专业的人聊一次。'],
+    line:'我的精神状态体检报告：隐性崩溃型。外人看我一切正常，只有我知道自己是靠意志力在撑。' },
+
+  numb:{ name:'麻木适应型', tag:'你不难过，但不难过不代表你没事。',
+    body:'你的快乐感知力偏低，但情绪并不低落——这不是矛盾，而是心理学里一个真实存在的状态：快感缺失（Anhedonia）。它指的是「对本来能带来快乐的事，提不起兴趣」。\n值得注意的是，快感缺失是抑郁的两个核心症状之一（另一个才是情绪低落）。也就是说：你不难过，不代表你没事。\n麻木往往比痛苦更值得警惕，因为痛苦会喊出声，麻木不会。你已经太久没有为一件小事真正高兴过了，这不是成熟，是耗损。',
+    advice:['从「感官小事」重新开始：晒太阳、走一段路、认真吃一顿饭，先恢复感知。','减少信息摄入——刷得越多，感受力越钝。','不要等「有兴致」才去做，先做，兴致是做完才来的。','记录每天一件「还可以」的小事，训练大脑重新注意正向信息。'],
+    line:'我的精神状态体检报告：麻木适应型。我不难过，但不难过不代表我没事。' },
+
+  overload:{ name:'大脑过载型', tag:'你不是想得不够，是想得太多、太重复。',
+    body:'你的专注续航力最低，其他指标尚可。你最大的消耗不在身体，而在脑子里——心理学把这叫做「反刍思维」（Rumination）：反复咀嚼同一件事，尤其是那些已经过去的、无法改变的瞬间。\n研究（Nolen-Hoeksema 的反应风格理论）发现，反刍是预测抑郁最强的因素之一，比事件本身的严重程度还重要。\n你的问题不是想得不够，而是想得太多、太重复。反刍和「反思」的区别在于：反思会带来结论和行动，反刍只会带来新一轮反刍。',
+    advice:['给「想」设一个时限：允许自己想 15 分钟，时间到就去做别的事。','把脑内循环写下来——写出来的问题，比在脑子里转的问题小一半。','区分「能改变的」和「不能改变的」，前者行动，后者放下。','用身体打断大脑：快走 20 分钟对反刍的效果，比「别想了」好得多。'],
+    line:'我的精神状态体检报告：大脑过载型。我不是想得不够，是想得太多、太重复。' },
+
+  stress:{ name:'高压运转型', tag:'你还能撑，但撑得很累。',
+    body:'你的压力耐受力最低，但意义感通常还在——所以你还能撑，只是撑得很累。\n这在心理学上叫「知觉压力」（Perceived Stress）：关键不是客观压力有多大，而是你「觉得」自己扛不扛得住。同样的事情，有人觉得是挑战，有人觉得是威胁——你现在处在后者。\n好消息是，知觉压力是可以被重新解释的。这是认知行为疗法最核心的发现之一：改变不了事情，但可以改变对事情的评估，而评估直接决定身体的应激反应。',
+    advice:['把「我必须完成」换成「我先完成一件」——把威胁感拆小。','每天留 20 分钟「不解决问题」的时间，让神经系统下线。','检查你的压力里有多少是「真的会发生」的，多数焦虑来自不会发生的事。','规律运动是最便宜的抗压手段，它对压力的生理反应有直接作用。'],
+    line:'我的精神状态体检报告：高压运转型。我还能撑，但撑得很累。' },
+
+  social:{ name:'社交漏电型', tag:'你不是社恐，你只是电量条比别人短。',
+    body:'你的社交电量最低。参加完一场聚会，你可能需要很久才能恢复。\n这不是「社恐」，也不是缺陷——人格心理学发现，内向者的神经系统基线唤醒水平更高，同样的社交刺激对他们来说是更强的输入，因此恢复得更慢。\n这不是要你变外向，而是要你承认一件事：你的电量条比别人短，所以你必须更严格地管理社交预算。硬撑只会让你在真正重要的人面前，也拿不出电量。',
+    advice:['给社交设定预算：一周几次、每次多久，提前决定，不临场硬撑。','学会「提前退出」——在电量耗尽前离场，比撑到最后体面得多。','保留独处的固定时间，那是充电，不是浪费。','把有限的电量优先给真正重要的人，而不是「不好意思拒绝」的人。'],
+    line:'我的精神状态体检报告：社交漏电型。我不是社恐，只是电量条比别人短。' },
+
+  empty:{ name:'意义感流失型', tag:'你照样在生活，只是不知道为了什么。',
+    body:'你的意义感最低。它不像情绪问题那样明显，但它的杀伤力更持久——心理学上叫「生命意义感」（Meaning in Life）缺失，也常被称为「存在性空虚」。\n它最典型的表现是：你照样上班、照样吃饭、照样回消息，但当你问自己「这一切为了什么」时，答案是空白。\n这是七项里最容易被忽视、也最需要被认真对待的一项。因为情绪低落会被察觉，而意义感的流失是静悄悄的——它不会让你痛，只会让你慢慢变得无所谓。',
+    advice:['先别找「人生意义」，找一个「这周想做成的小事」——意义是从具体里长出来的。','恢复一件你曾经在意、后来放下的爱好，哪怕只做 20 分钟。','建立「给予」的通道：帮一个人、教一个人，意义感常从被需要里回来。','如果长期空白，去做一次价值观梳理——不是想，是写下来。'],
+    line:'我的精神状态体检报告：意义感流失型。我照样在生活，只是不知道为了什么。' },
+
+  strain:{ name:'硬撑型', tag:'你不是扛不住，你是恢复得太慢。',
+    body:'你的恢复力最低。这意味着你其实不是「扛不住」，而是「恢复得慢」——遇到糟心事，别人睡一觉就好了，你可能要好几天。\n心理学上，这对应「心理韧性」（Resilience）偏低。\n好消息是：韧性是所有心理指标里最可被训练的一项。它不是天生的性格，而是由具体习惯构成的——睡眠质量、社会支持，以及你对自己说话的方式。你的问题不是不够坚强，而是没有给自己恢复的条件。',
+    advice:['优先修睡眠——恢复力的第一变量不是心态，是睡眠。','检查你对自己说话的方式：「我怎么什么都做不好」会延长恢复期。','把「恢复」安排进日程，而不是等有空才恢复。','主动维护 1–2 个能说心里话的人，社会支持是韧性最强的预测因子。'],
+    line:'我的精神状态体检报告：硬撑型。我不是扛不住，是恢复得太慢。' },
+
+  dead:{ name:'低电量休眠型', tag:'人还活着，但快乐、热情、情绪感知基本下线。',
+    body:'你的整体指标偏低，其中快乐感知力是最低的一项。2026 年有一个词精准地描述了你：活人微死——身体完好、照常过日子，但精神麻木、灵魂低电量休眠。它介于「鲜活」和「彻底摆烂」之间。\n需要区分的是：这不是抑郁（抑郁会伴随持续的自我否定和行动力丧失），也不是躺平（躺平是主动选择，微死是被迫的机械运转）。\n好消息是，微死通常是可自愈的——它更像是长期「输入太多、恢复太少」的结果，而不是一种病。',
+    advice:['从最小的感官刺激开始：晒太阳、散步、认真吃一顿喜欢的饭。','大幅减少刷手机的时间——信息过载是微死最主要的成因之一。','允许自己短暂放空，不必强迫自己「积极起来」，那只会更累。','减少无效社交，把时间留给恢复。如果两周后仍无改善，请找专业的人聊一次。'],
+    line:'我的精神状态体检报告：低电量休眠型。人还活着，但热情和感知基本下线了。' },
+
+  exhaust:{ name:'深度耗竭型', tag:'这不是矫情，也不是「想开点」就能好的事。',
+    body:'你的多项指标都落在预警区间。这不是「矫情」，也不是「想开点就能好」的事——它更接近职业倦怠的晚期阶段，或者抑郁的早期信号。\nMaslach 的研究指出，耗竭不是突然发生的，而是长期「投入大于恢复」的结果。你不是脆弱，你是消耗了太久。\n这个阶段最重要的一件事不是「加油」，而是「减负」和「求助」。如果这种状态已经持续两周以上，请认真考虑找专业的人聊一次——这不是软弱，这是对自己负责。',
+    advice:['减负优先于加油：先减掉一件正在消耗你的事。','把「求助」列为本周的具体任务，而不是「以后再说」。','保证最基本的生理底线：睡眠、进食、光照、走动。','如果出现持续两周以上的低落、失眠或失去行动力，请尽快联系专业心理或医疗机构。'],
+    line:'我的精神状态体检报告：深度耗竭型。这不是矫情，也不是想开点就能好的事。' }
+};
+
+/* =========================================================
+   5. 计分与分型引擎
+   ========================================================= */
+function computeScores(ans){
+  const raw = {}, max = {}, min = {};
+  DIMS.forEach(d=>{ raw[d.key]=0; max[d.key]=0; min[d.key]=0; });
+  QUESTIONS.forEach((q,i)=>{
+    const s = ans[i] != null ? q.o[ans[i]].s : 2;
+    raw[q.d] += s; max[q.d] += 4; min[q.d] += 1;
+  });
+  const scores = {};
+  DIMS.forEach(d=>{
+    const r = max[d.key]-min[d.key];
+    scores[d.key] = Math.round((raw[d.key]-min[d.key]) / r * 100);
+  });
+  return scores;
+}
+function pickType(scores){
+  const vals = DIMS.map(d=>scores[d.key]);
+  const avg = vals.reduce((a,b)=>a+b,0)/vals.length;
+  const sd = Math.sqrt(vals.reduce((a,b)=>a+Math.pow(b-avg,2),0)/vals.length);
+  const sorted = vals.slice().sort((a,b)=>a-b);
+  const minV = sorted[0];
+  const solo = sorted[1] - sorted[0];
+  const lowest = DIMS.reduce((a,b)=> scores[b.key] < scores[a.key] ? b : a).key;
+  let key;
+  if (avg <= 38) key = (scores.joy <= avg - 8) ? 'dead' : 'exhaust';
+  else if (solo >= 15 && minV < 55) key = ({
+    emo:'hidden', joy:'numb', foc:'overload', str:'stress', soc:'social', mng:'empty', res:'strain'
+  })[lowest];
+  else if (sd >= 20) key = 'wave';
+  else if (avg >= 75) key = 'full';
+  else if (avg <= 56) key = 'selfco';
+  else key = 'steady';
+  return { key: key, avg: Math.round(avg), sd: Math.round(sd), lowest: lowest };
+}
+function statusOf(v){
+  if (v >= 60) return { cls:'ok',   txt:'正常', color:'#1a8f5f', bg:'#e9f7f0' };
+  if (v >= 40) return { cls:'low',  txt:'偏低', color:'#c8860d', bg:'#fdf5e4' };
+  return         { cls:'warn', txt:'预警', color:'#d92d3c', bg:'#fdeff0' };
+}
+
+/* =========================================================
+   6. 二维码编码器（字节模式 / 纠错等级 M / 版本 1-10，零依赖）
+   ========================================================= */
+const QR = (function(){
+  const EXP = new Array(256), LOG = new Array(256);
+  (function(){ let x=1; for(let i=0;i<255;i++){ EXP[i]=x; LOG[x]=i; x<<=1; if(x&0x100) x^=0x11D; } EXP[255]=EXP[0]; })();
+  const mul = (a,b)=> (!a||!b) ? 0 : EXP[(LOG[a]+LOG[b])%255];
+  function gen(n){ let g=[1]; for(let i=0;i<n;i++){ const ng=new Array(g.length+1).fill(0);
+    for(let j=0;j<g.length;j++){ ng[j]^=g[j]; ng[j+1]^=mul(g[j],EXP[i]); } g=ng; } return g; }
+  function rs(data, ecLen){ const g=gen(ecLen), res=new Array(ecLen).fill(0);
+    for(const b of data){ const f=b^res[0]; res.shift(); res.push(0);
+      if(f) for(let i=0;i<ecLen;i++) res[i]^=mul(g[i+1],f); } return res; }
+  const RS = { 1:[[1,26,16]], 2:[[1,44,28]], 3:[[1,70,44]], 4:[[2,50,32]], 5:[[2,67,43]],
+    6:[[4,43,27]], 7:[[4,49,31]], 8:[[2,60,38],[2,61,39]], 9:[[3,58,36],[2,59,37]], 10:[[4,69,43],[1,70,44]] };
+  const AL = { 1:[], 2:[6,18], 3:[6,22], 4:[6,26], 5:[6,30], 6:[6,34], 7:[6,22,38], 8:[6,24,42], 9:[6,26,46], 10:[6,28,50] };
+  const RM = { 1:0,2:7,3:7,4:7,5:7,6:7,7:0,8:0,9:0,10:0 };
+  const MASKS = [
+    (i,j)=>(i+j)%2===0, (i,j)=>i%2===0, (i,j)=>j%3===0, (i,j)=>(i+j)%3===0,
+    (i,j)=>(Math.floor(i/2)+Math.floor(j/3))%2===0, (i,j)=>(i*j)%2+(i*j)%3===0,
+    (i,j)=>((i*j)%2+(i*j)%3)%2===0, (i,j)=>((i*j)%3+(i+j)%2)%2===0 ];
+  function bd(n){ let d=0; while(n){ d++; n>>>=1; } return d; }
+  function fmt(ec,mask){ const data=(ec<<3)|mask, G=0x537; let d=data<<10;
+    while(bd(d)-bd(G)>=0) d^=(G<<(bd(d)-bd(G))); return ((data<<10)|d)^0x5412; }
+  function vbits(v){ const G=0x1F25; let d=v<<12;
+    while(bd(d)-bd(G)>=0) d^=(G<<(bd(d)-bd(G))); return (v<<12)|d; }
+  function utf8(s){ const o=[]; for(const ch of s){ const c=ch.codePointAt(0);
+    if(c<0x80) o.push(c);
+    else if(c<0x800) o.push(0xC0|(c>>6), 0x80|(c&63));
+    else if(c<0x10000) o.push(0xE0|(c>>12), 0x80|((c>>6)&63), 0x80|(c&63));
+    else o.push(0xF0|(c>>18), 0x80|((c>>12)&63), 0x80|((c>>6)&63), 0x80|(c&63)); } return o; }
+  function make(text, mask){
+    const bytes = utf8(text);
+    let ver=0, cap=0;
+    for(let v=1;v<=10;v++){
+      const c = RS[v].reduce((a,b)=>a+b[0]*b[2],0);
+      const cc = v<10?8:16;
+      if(Math.ceil((4+cc+bytes.length*8)/8) <= c){ ver=v; cap=c; break; }
+    }
+    if(!ver) return null;
+    const bits=[]; const put=(val,len)=>{ for(let i=len-1;i>=0;i--) bits.push((val>>>i)&1); };
+    put(4,4); put(bytes.length, ver<10?8:16);
+    bytes.forEach(b=>put(b,8));
+    const total=cap*8;
+    for(let i=0;i<4 && bits.length<total;i++) bits.push(0);
+    while(bits.length%8) bits.push(0);
+    const cw=[];
+    for(let i=0;i<bits.length;i+=8){ let b=0; for(let j=0;j<8;j++) b=(b<<1)|bits[i+j]; cw.push(b); }
+    const pads=[0xEC,0x11];
+    for(let i=0; cw.length<cap; i++) cw.push(pads[i%2]);
+    const blocks=[]; let off=0;
+    for(const [cnt,tot,dlen] of RS[ver]){
+      for(let k=0;k<cnt;k++){ const d=cw.slice(off,off+dlen); off+=dlen;
+        blocks.push({ d:d, e:rs(d, tot-dlen) }); }
+    }
+    const md=Math.max(...blocks.map(b=>b.d.length)), me=Math.max(...blocks.map(b=>b.e.length));
+    const out=[];
+    for(let i=0;i<md;i++) for(const b of blocks) if(i<b.d.length) out.push(b.d[i]);
+    for(let i=0;i<me;i++) for(const b of blocks) if(i<b.e.length) out.push(b.e[i]);
+    for(let i=0;i<RM[ver];i++) out.push(0);
+    const size=ver*4+17;
+    const m=Array.from({length:size},()=>new Array(size).fill(null));
+    const f=Array.from({length:size},()=>new Array(size).fill(false));
+    const finder=(r,c)=>{ for(let i=-1;i<=7;i++) for(let j=-1;j<=7;j++){
+      const rr=r+i, cc=c+j; if(rr<0||rr>=size||cc<0||cc>=size) continue;
+      const dark=(i>=0&&i<=6&&(j===0||j===6))||(j>=0&&j<=6&&(i===0||i===6))||(i>=2&&i<=4&&j>=2&&j<=4);
+      m[rr][cc]=dark?1:0; f[rr][cc]=true; } };
+    finder(0,0); finder(0,size-7); finder(size-7,0);
+    const cen=AL[ver];
+    for(const r of cen) for(const c of cen){
+      if(f[r][c]) continue;
+      for(let i=-2;i<=2;i++) for(let j=-2;j<=2;j++){
+        const dark=Math.abs(i)===2||Math.abs(j)===2||(i===0&&j===0);
+        m[r+i][c+j]=dark?1:0; f[r+i][c+j]=true; } }
+    for(let i=8;i<size-8;i++){
+      if(!f[6][i]){ m[6][i]=i%2===0?1:0; f[6][i]=true; }
+      if(!f[i][6]){ m[i][6]=i%2===0?1:0; f[i][6]=true; } }
+    m[size-8][8]=1; f[size-8][8]=true;
+    const resv=(r,c)=>{ if(!f[r][c]){ f[r][c]=true; m[r][c]=0; } };
+    for(let i=0;i<9;i++){ resv(8,i); resv(i,8); }
+    for(let i=0;i<8;i++){ resv(8,size-1-i); resv(size-1-i,8); }
+    if(ver>=7){ for(let i=0;i<18;i++){ resv(Math.floor(i/3), i%3+size-11); resv(i%3+size-11, Math.floor(i/3)); } }
+    const mf=MASKS[mask];
+    let inc=-1, row=size-1, bi=7, byi=0;
+    for(let col=size-1; col>0; col-=2){
+      if(col===6) col--;
+      for(;;){
+        for(let c=0;c<2;c++){
+          const cc=col-c;
+          if(m[row][cc]===null){
+            let dark=false;
+            if(byi<out.length) dark=((out[byi]>>>bi)&1)===1;
+            if(mf(row,cc)) dark=!dark;
+            m[row][cc]=dark?1:0;
+            if(--bi===-1){ byi++; bi=7; }
+          }
+        }
+        row+=inc;
+        if(row<0||row>=size){ row-=inc; inc=-inc; break; }
+      }
+    }
+    const fb=fmt(0,mask);
+    for(let i=0;i<15;i++){ const b=((fb>>i)&1)===1?1:0;
+      if(i<6) m[i][8]=b; else if(i<8) m[i+1][8]=b; else m[size-15+i][8]=b; }
+    for(let i=0;i<15;i++){ const b=((fb>>i)&1)===1?1:0;
+      if(i<8) m[8][size-1-i]=b; else if(i<9) m[8][7]=b; else m[8][14-i]=b; }
+    m[size-8][8]=1;
+    if(ver>=7){ const vb=vbits(ver);
+      for(let i=0;i<18;i++){ const b=((vb>>i)&1)===1?1:0;
+        m[Math.floor(i/3)][i%3+size-11]=b; m[i%3+size-11][Math.floor(i/3)]=b; } }
+    return { size:size, modules:m, version:ver };
+  }
+  function penalty(m,size){
+    let lost=0;
+    for(let r=0;r<size;r++) for(let c=0;c<size;c++){
+      const d=m[r][c]; let same=0;
+      for(let a=-1;a<=1;a++) for(let b=-1;b<=1;b++){
+        if((a===0&&b===0)||r+a<0||r+a>=size||c+b<0||c+b>=size) continue;
+        if(d===m[r+a][c+b]) same++; }
+      if(same>5) lost+=3+same-5; }
+    for(let r=0;r<size-1;r++) for(let c=0;c<size-1;c++){
+      const n=m[r][c]+m[r+1][c]+m[r][c+1]+m[r+1][c+1];
+      if(n===0||n===4) lost+=3; }
+    for(let r=0;r<size;r++) for(let c=0;c<size-6;c++){
+      if(m[r][c]&&!m[r][c+1]&&m[r][c+2]&&m[r][c+3]&&m[r][c+4]&&!m[r][c+5]&&m[r][c+6]) lost+=40; }
+    for(let c=0;c<size;c++) for(let r=0;r<size-6;r++){
+      if(m[r][c]&&!m[r+1][c]&&m[r+2][c]&&m[r+3][c]&&m[r+4][c]&&!m[r+5][c]&&m[r+6][c]) lost+=40; }
+    let dark=0;
+    for(let r=0;r<size;r++) for(let c=0;c<size;c++) if(m[r][c]) dark++;
+    lost += Math.floor(Math.abs(100*dark/size/size-50)/5)*10;
+    return lost;
+  }
+  return function(text){
+    let best=null, bp=Infinity;
+    for(let k=0;k<8;k++){ const q=make(text,k); if(!q) continue;
+      const p=penalty(q.modules,q.size); if(p<bp){ bp=p; best=q; } }
+    return best;
+  };
+})();
+
+/* =========================================================
+   7. 绘图工具 + 完整报告长图
+   ========================================================= */
+const FF = '-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif';
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+}
+function drawRadarAt(ctx,cx,cy,R,dims,scores,opt){
+  opt = opt||{};
+  const onDark = !!opt.onDark;
+  const lineC = onDark?'rgba(255,255,255,.18)':'#e8eeec';
+  const ringC = onDark?'rgba(255,255,255,.30)':'#c9d6d3';
+  const refC  = onDark?'rgba(255,255,255,.55)':'#9fc9c0';
+  const fillC = onDark?'rgba(255,255,255,.22)':'rgba(15,143,122,.18)';
+  const strC  = onDark?'#ffffff':'#0f8f7a';
+  const dotC  = onDark?'#ffffff':'#0f8f7a';
+  const lblC  = onDark?'rgba(255,255,255,.92)':'#374151';
+  const n=dims.length;
+  const ang=i=>-Math.PI/2+i*2*Math.PI/n;
+  for(let k=1;k<=4;k++){
+    ctx.beginPath();
+    for(let i=0;i<n;i++){ const r=R*k/4, a=ang(i);
+      const x=cx+r*Math.cos(a), y=cy+r*Math.sin(a); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }
+    ctx.closePath(); ctx.strokeStyle=k===4?ringC:lineC; ctx.lineWidth=1; ctx.stroke();
+  }
+  for(let i=0;i<n;i++){ const a=ang(i);
+    ctx.beginPath(); ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+R*Math.cos(a), cy+R*Math.sin(a));
+    ctx.strokeStyle=lineC; ctx.lineWidth=1; ctx.stroke(); }
+  ctx.beginPath();
+  for(let i=0;i<n;i++){ const r=R*0.6, a=ang(i);
+    const x=cx+r*Math.cos(a), y=cy+r*Math.sin(a); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }
+  ctx.closePath(); ctx.setLineDash([4,4]); ctx.strokeStyle=refC; ctx.lineWidth=1.4; ctx.stroke(); ctx.setLineDash([]);
+  ctx.beginPath();
+  for(let i=0;i<n;i++){ const v=scores[dims[i].key]/100, a=ang(i);
+    const x=cx+R*v*Math.cos(a), y=cy+R*v*Math.sin(a); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }
+  ctx.closePath(); ctx.fillStyle=fillC; ctx.fill(); ctx.strokeStyle=strC; ctx.lineWidth=2.4; ctx.stroke();
+  for(let i=0;i<n;i++){ const v=scores[dims[i].key]/100, a=ang(i);
+    const x=cx+R*v*Math.cos(a), y=cy+R*v*Math.sin(a);
+    ctx.beginPath(); ctx.arc(x,y,3.4,0,Math.PI*2); ctx.fillStyle=dotC; ctx.fill();
+    ctx.strokeStyle=onDark?'rgba(255,255,255,.35)':'#fff'; ctx.lineWidth=1.6; ctx.stroke(); }
+  ctx.font='700 '+(opt.fs||13)+'px '+FF;
+  for(let i=0;i<n;i++){ const a=ang(i);
+    const lx=cx+(R+(opt.pad||24))*Math.cos(a), ly=cy+(R+(opt.pad||24))*Math.sin(a);
+    ctx.textAlign = Math.abs(Math.cos(a))<0.2?'center':(Math.cos(a)>0?'left':'right');
+    ctx.textBaseline = Math.abs(Math.sin(a))<0.2?'middle':(Math.sin(a)>0?'top':'bottom');
+    ctx.fillStyle=lblC; ctx.fillText(dims[i].short,lx,ly); }
+  ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+}
+
+/* 完整报告长图绘制（浏览器 / Node 通用） */
+const RPT_W = 750;
+const RPT_PAD = 54;
+const RPT_FF = '-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif';
+
+function rpRound(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+/* 把文本切成「中文逐字 + 英文数字整词」的 token，避免把单词从中间断开 */
+function rpTokens(s) {
+  const out = []; let buf = '';
+  for (const ch of s) {
+    if (/[0-9A-Za-z]/.test(ch)) buf += ch;
+    else { if (buf) { out.push(buf); buf = ''; } out.push(ch); }
+  }
+  if (buf) out.push(buf);
+  return out;
+}
+function rpSplit(ctx, p, maxW) {
+  const lines = []; let line = '';
+  for (const tk of rpTokens(p)) {
+    if (line && ctx.measureText(line + tk).width > maxW) { lines.push(line); line = tk; }
+    else line += tk;
+    while (ctx.measureText(line).width > maxW && line.length > 1) {
+      let cut = line.length;
+      while (cut > 1 && ctx.measureText(line.slice(0, cut)).width > maxW) cut--;
+      lines.push(line.slice(0, cut)); line = line.slice(cut);
+    }
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+/* 绘制段落，返回下一个可用基线 y */
+function rpPara(ctx, text, x, y, maxW, lineH, paraGap) {
+  const paras = String(text).split('\n');
+  let cy = y;
+  paras.forEach((p, pi) => {
+    if (pi > 0) cy += (paraGap || lineH * 0.4);
+    for (const ln of rpSplit(ctx, p, maxW)) { ctx.fillText(ln, x, cy); cy += lineH; }
+  });
+  return cy;
+}
+function rpLines(ctx, text, maxW) {
+  let n = 0;
+  String(text).split('\n').forEach(p => { n += rpSplit(ctx, p, maxW).length; });
+  return n;
+}
+function rpSecTitle(ctx, txt, y, W) {
+  ctx.fillStyle = '#0f8f7a';
+  rpRound(ctx, RPT_PAD - 17, y - 15, 5, 21, 2.5); ctx.fill();
+  ctx.font = '800 22px ' + RPT_FF;
+  ctx.textAlign = 'left';
+  ctx.fillText(txt, RPT_PAD, y);
+  ctx.beginPath(); ctx.moveTo(RPT_PAD, y + 19); ctx.lineTo(W - RPT_PAD, y + 19);
+  ctx.strokeStyle = '#e8eceb'; ctx.lineWidth = 1; ctx.stroke();
+  return y + 56;
+}
+function rpPill(ctx, txt, rightX, baselineY, color, bg) {
+  ctx.font = '700 20px ' + RPT_FF;
+  const w = ctx.measureText(txt).width + 30, h = 36;
+  rpRound(ctx, rightX - w, baselineY - 25, w, h, 18);
+  ctx.fillStyle = bg; ctx.fill();
+  ctx.fillStyle = color; ctx.textAlign = 'center';
+  ctx.fillText(txt, rightX - w / 2, baselineY);
+  ctx.textAlign = 'left';
+  return w;
+}
+/* 左对齐胶囊，返回宽度 */
+function rpPillL(ctx, txt, x, baselineY, color, bg) {
+  ctx.font = '700 20px ' + RPT_FF;
+  const w = ctx.measureText(txt).width + 30, h = 36;
+  rpRound(ctx, x, baselineY - 25, w, h, 18);
+  ctx.fillStyle = bg; ctx.fill();
+  ctx.fillStyle = color; ctx.textAlign = 'center';
+  ctx.fillText(txt, x + w / 2, baselineY);
+  ctx.textAlign = 'left';
+  return w;
+}
+
+/* 返回实际高度（先画到临时大画布上，再按实际高度裁剪） */
+function drawLongReport(ctx, o) {
+  const W = RPT_W, PAD = RPT_PAD, CW = W - PAD * 2;
+  const dims = o.dims, scores = o.scores, type = o.type, avg = o.avg;
+  const HEAD = 250;
+
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, W, 8000);
+
+  /* ---------- 头图 ---------- */
+  const g = ctx.createLinearGradient(0, 0, W, HEAD);
+  g.addColorStop(0, '#0a6b5c'); g.addColorStop(1, '#2fb99a');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, HEAD);
+  ctx.beginPath(); ctx.arc(W - 40, 20, 150, 0, Math.PI * 2); ctx.fillStyle = 'rgba(255,255,255,.07)'; ctx.fill();
+
+  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.font = '700 24px ' + RPT_FF;
+  ctx.fillText(o.brand, PAD, 72);
+  ctx.fillStyle = '#ffffff'; ctx.font = '800 40px ' + RPT_FF;
+  ctx.fillText('精神状态体检报告', PAD, 126);
+  ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.font = '500 17px ' + RPT_FF;
+  ctx.fillText('MENTAL STATE CHECKUP', PAD, 158);
+  ctx.fillStyle = 'rgba(255,255,255,.62)'; ctx.font = '600 17px ' + RPT_FF;
+  ctx.fillText('编号 ' + o.no, PAD, 204);
+  ctx.textAlign = 'right';
+  ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.font = '500 17px ' + RPT_FF;
+  ctx.fillText(o.date, W - PAD, 204);
+  ctx.textAlign = 'left';
+
+  /* ---------- 综合诊断 ---------- */
+  let y = HEAD + 64;
+  ctx.fillStyle = '#9ca3af'; ctx.font = '700 20px ' + RPT_FF;
+  ctx.fillText('综 合 诊 断', PAD, y);
+  y += 66;
+  ctx.fillStyle = '#0a6b5c'; ctx.font = '800 56px ' + RPT_FF;
+  ctx.fillText(type.name, PAD, y);
+  y += 54;
+  ctx.fillStyle = '#4b5563'; ctx.font = '500 25px ' + RPT_FF;
+  y = rpPara(ctx, type.tag, PAD, y, CW, 39);
+  y += 30;
+  rpRound(ctx, PAD, y, 330, 64, 32); ctx.fillStyle = '#eef4f3'; ctx.fill();
+  ctx.fillStyle = '#0a6b5c'; ctx.font = '800 34px ' + RPT_FF;
+  const numS = String(avg); ctx.fillText(numS, PAD + 30, y + 44);
+  const nw = ctx.measureText(numS).width;
+  ctx.fillStyle = '#6b7280'; ctx.font = '500 22px ' + RPT_FF;
+  ctx.fillText('/ 100 综合评分', PAD + 30 + nw + 12, y + 42);
+  y += 64 + 58;
+
+  /* ---------- 雷达图 ---------- */
+  y = rpSecTitle(ctx, '指标雷达', y, W);
+  const R = 112;
+  drawRadarAt(ctx, W / 2, y + R + 30, R, dims, scores, { onDark: false, fs: 15, pad: 30 });
+  y += (R + 30) * 2 + 30;
+
+  /* ---------- 指标明细 ---------- */
+  y = rpSecTitle(ctx, '指标明细', y, W);
+  ctx.font = '700 19px ' + RPT_FF; ctx.fillStyle = '#9ca3af';
+  ctx.fillText('检测项', PAD, y);
+  ctx.textAlign = 'right'; ctx.fillText('数值', W - PAD - 130, y); ctx.fillText('状态', W - PAD, y);
+  ctx.textAlign = 'left';
+  y += 18;
+  ctx.beginPath(); ctx.moveTo(PAD, y); ctx.lineTo(W - PAD, y);
+  ctx.strokeStyle = '#e8eceb'; ctx.lineWidth = 1; ctx.stroke();
+  y += 44;
+  dims.forEach(d => {
+    const v = scores[d.key], st = o.statusOf(v);
+    ctx.fillStyle = '#111827'; ctx.font = '700 24px ' + RPT_FF;
+    ctx.fillText(d.name, PAD, y);
+    ctx.textAlign = 'right'; ctx.fillStyle = st.color; ctx.font = '800 27px ' + RPT_FF;
+    ctx.fillText(String(v), W - PAD - 132, y);
+    ctx.textAlign = 'left';
+    rpPill(ctx, st.txt, W - PAD, y, st.color, st.bg);
+    // 进度条
+    rpRound(ctx, PAD, y + 16, CW, 9, 4.5); ctx.fillStyle = '#eef1f0'; ctx.fill();
+    rpRound(ctx, PAD, y + 16, Math.max(10, CW * v / 100), 9, 4.5); ctx.fillStyle = st.color; ctx.fill();
+    y += 30;
+    ctx.beginPath(); ctx.moveTo(PAD, y); ctx.lineTo(W - PAD, y);
+    ctx.strokeStyle = '#f3f4f6'; ctx.lineWidth = 1; ctx.stroke();
+    y += 40;
+  });
+  y += 18;
+
+  /* ---------- 重点关注项 ---------- */
+  const sorted = dims.map(d => ({ d: d, v: scores[d.key] })).sort((a, b) => a.v - b.v);
+  const abn = sorted.filter(x => x.v < 60).slice(0, 3);
+  y = rpSecTitle(ctx, '重点关注项', y, W);
+  if (abn.length) {
+    abn.forEach(({ d, v }) => {
+      const st = o.statusOf(v);
+      const noteLines = rpLines(ctx, d.note, CW - 40);
+      const thLines = rpLines(ctx, '理论依据 · ' + d.theory, CW - 40);
+      const cardH = 76 + noteLines * 36 + 22 + thLines * 30 + 26;
+      rpRound(ctx, PAD, y, CW, cardH, 14); ctx.fillStyle = '#f7f9fa'; ctx.fill();
+      ctx.strokeStyle = '#e8eceb'; ctx.lineWidth = 1; ctx.stroke();
+      let cy = y + 48;
+      rpPill(ctx, st.txt, PAD + 40 + ctx.measureText(d.name).width + 110, cy, st.color, st.bg);
+      ctx.fillStyle = '#111827'; ctx.font = '800 25px ' + RPT_FF;
+      ctx.fillText(d.name, PAD + 24, cy);
+      ctx.textAlign = 'right'; ctx.fillStyle = st.color; ctx.font = '800 26px ' + RPT_FF;
+      ctx.fillText(String(v), W - PAD - 24, cy); ctx.textAlign = 'left';
+      cy += 32;
+      ctx.fillStyle = '#374151'; ctx.font = '500 22px ' + RPT_FF;
+      cy = rpPara(ctx, d.note, PAD + 24, cy, CW - 48, 36);
+      cy += 14;
+      ctx.strokeStyle = '#e0e6e4'; ctx.setLineDash([5, 5]);
+      ctx.beginPath(); ctx.moveTo(PAD + 24, cy - 22); ctx.lineTo(W - PAD - 24, cy - 22); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#6b7280'; ctx.font = '500 21px ' + RPT_FF;
+      cy = rpPara(ctx, '理论依据 · ' + d.theory, PAD + 24, cy + 8, CW - 48, 30);
+      y += cardH + 20;
+    });
+  } else {
+    rpRound(ctx, PAD, y, CW, 84, 14); ctx.fillStyle = '#f7f9fa'; ctx.fill();
+    ctx.fillStyle = '#374151'; ctx.font = '500 23px ' + RPT_FF;
+    ctx.fillText('七项指标均在参考区间内，没有需要重点关注的异常项。', PAD + 24, y + 50);
+    y += 84 + 20;
+  }
+  y += 16;
+
+  /* ---------- 诊断解读 ---------- */
+  y = rpSecTitle(ctx, '诊断解读', y, W);
+  ctx.fillStyle = '#374151'; ctx.font = '500 23px ' + RPT_FF;
+  y = rpPara(ctx, type.body, PAD, y, CW, 40);
+  y += 34;
+
+  /* ---------- 医生建议 ---------- */
+  y = rpSecTitle(ctx, '医生建议', y, W);
+  type.advice.forEach(a => {
+    ctx.beginPath(); ctx.arc(PAD + 9, y - 8, 9, 0, Math.PI * 2);
+    ctx.fillStyle = '#e6f7f3'; ctx.fill();
+    ctx.strokeStyle = '#0f8f7a'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#374151'; ctx.font = '500 23px ' + RPT_FF;
+    const lines = rpLines(ctx, a, CW - 36);
+    rpPara(ctx, a, PAD + 34, y, CW - 36, 40);
+    y += lines * 40 + 18;
+  });
+  y += 16;
+
+  /* ---------- 结论 ---------- */
+  const qLines = rpLines(ctx, type.line, CW - 60);
+  const qH = 52 + qLines * 40 + 44;
+  const qg = ctx.createLinearGradient(PAD, y, W - PAD, y + qH);
+  qg.addColorStop(0, '#0f8f7a'); qg.addColorStop(1, '#2fb99a');
+  rpRound(ctx, PAD, y, CW, qH, 16); ctx.fillStyle = qg; ctx.fill();
+  ctx.fillStyle = '#ffffff'; ctx.font = '700 25px ' + RPT_FF;
+  let tailY = rpPara(ctx, type.line, PAD + 30, y + 56, CW - 60, 40);
+  ctx.fillStyle = 'rgba(255,255,255,.8)'; ctx.font = '500 19px ' + RPT_FF;
+  ctx.fillText('——你的精神状态体检结论', PAD + 30, tailY + 14);
+  y += qH + 56;
+
+  /* ---------- 底部：二维码 ---------- */
+  const qs = 108, qx = PAD, qy = y;
+  rpRound(ctx, qx - 10, qy - 10, qs + 20, qs + 20, 14); ctx.fillStyle = '#f7f9fa'; ctx.fill();
+  if (o.qr) {
+    const cell = qs / o.qr.size;
+    ctx.fillStyle = '#0a6b5c';
+    for (let r = 0; r < o.qr.size; r++) for (let c = 0; c < o.qr.size; c++)
+      if (o.qr.modules[r][c]) ctx.fillRect(qx + c * cell, qy + r * cell, Math.ceil(cell), Math.ceil(cell));
+  }
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#111827'; ctx.font = '800 25px ' + RPT_FF;
+  ctx.fillText('扫码测测你的精神状态', qx + qs + 34, qy + 40);
+  ctx.fillStyle = '#6b7280'; ctx.font = '500 20px ' + RPT_FF;
+  ctx.fillText(o.brand + ' · 精神状态体检报告', qx + qs + 34, qy + 74);
+  ctx.fillStyle = '#9ca3af'; ctx.font = '500 19px ' + RPT_FF;
+  ctx.fillText(o.site || '', qx + qs + 34, qy + 104);
+  y = qy + qs + 20;
+
+  /* ---------- 免责 ---------- */
+  y += 34;
+  ctx.beginPath(); ctx.moveTo(PAD, y); ctx.lineTo(W - PAD, y);
+  ctx.strokeStyle = '#e8eceb'; ctx.lineWidth = 1; ctx.stroke();
+  y += 34;
+  ctx.fillStyle = '#9ca3af'; ctx.font = '500 19px ' + RPT_FF;
+  y = rpPara(ctx, '本报告由自研测评模型生成，7 项指标参考了职业倦怠、快感缺失、反刍思维、知觉压力、心理韧性等心理学研究概念，题目与参考值为本次自研，不是临床量表，不能用于任何医学诊断。报告仅供自我觉察参考。如果你长期情绪低落、失眠、对一切失去兴趣，或出现伤害自己的想法，请立即联系专业心理或医疗机构。',
+    PAD, y, CW, 32);
+  y += 44;
+
+  return Math.ceil(y);
+}
+
+/* =========================================================
+   8. 通用工具
+   ========================================================= */
+const $ = id => document.getElementById(id);
+let toastTimer;
+function toast(msg, bad){
+  const el=$('toast');
+  el.textContent=msg;
+  el.className='toast on'+(bad?' bad':'');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>{ el.className='toast'; }, 2200);
+}
+function fallbackCopy(t){
+  const ta=document.createElement('textarea');
+  ta.value=t; ta.setAttribute('readonly','');
+  ta.style.cssText='position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+  document.body.appendChild(ta);
+  ta.select(); ta.setSelectionRange(0,t.length);
+  let ok=false; try{ ok=document.execCommand('copy'); }catch(e){}
+  document.body.removeChild(ta);
+  return ok;
+}
+function copyText(t){
+  if(navigator.clipboard && window.isSecureContext){
+    return navigator.clipboard.writeText(t).then(()=>true).catch(()=>fallbackCopy(t));
+  }
+  return Promise.resolve(fallbackCopy(t));
+}
+function openModal(id){ $(id).classList.add('on'); }
+function closeModal(id){ $(id).classList.remove('on'); }
+function manualCopy(text, title){
+  $('copy-title').textContent = title || '长按下面的文字，全选复制';
+  const ta = $('copy-ta');
+  ta.value = text;
+  openModal('modal-copy');
+  setTimeout(()=>{ try{ ta.focus(); ta.select(); ta.setSelectionRange(0,text.length); }catch(e){} }, 120);
+}
+function copyWith(text, okMsg, title){
+  copyText(text).then(ok=>{ if(ok) toast(okMsg); else manualCopy(text, title); });
+}
+function baseUrl(){
+  if(/^https?:$/.test(location.protocol)) return location.origin + location.pathname;
+  if(CONFIG.published) return CONFIG.published;
+  return String(location.href).split('#')[0];
+}
+function resultLink(scores){ return baseUrl() + '#r=' + DIMS.map(d=>scores[d.key]).join(','); }
+function parseHash(){
+  const m = location.hash.match(/r=([\d,]+)/);
+  if(!m) return null;
+  const p = m[1].split(',').map(Number);
+  if(p.length !== DIMS.length || p.some(n=>!isFinite(n)||n<0||n>100)) return null;
+  const s={}; DIMS.forEach((d,i)=>{ s[d.key]=p[i]; });
+  return s;
+}
+function isWeChat(){ return /MicroMessenger/i.test(navigator.userAgent); }
+function downloadBlob(blob, filename){
+  try{
+    if(!window.URL || typeof URL.createObjectURL !== 'function') throw new Error('unsupported');
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    if(typeof a.download === 'undefined') throw new Error('unsupported');
+    a.href=url; a.download=filename; a.style.display='none';
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{ try{ document.body.removeChild(a); URL.revokeObjectURL(url); }catch(e){} }, 6000);
+    return true;
+  }catch(e){ toast('请长按上方图片 → 保存到相册', true); return false; }
+}
+/* 保存图片：微信内长按 / 系统分享存相册 / 直接下载到文件夹 */
+function saveImage(canvas, filename){
+  canvas.toBlob(function(blob){
+    if(!blob){ toast('生成失败，请长按图片保存', true); return; }
+    const wx = isWeChat();
+    if(!wx && typeof File!=='undefined' && navigator.canShare){
+      let file=null;
+      try{ file = new File([blob], filename, {type:'image/png'}); }catch(e){}
+      if(file && navigator.canShare({files:[file]})){
+        navigator.share({ files:[file], title:'我的精神状态体检报告' })
+          .then(()=>toast('选择「存储图像」即可存进相册'))
+          .catch(err=>{ if(!err || err.name!=='AbortError') downloadBlob(blob, filename); });
+        return;
+      }
+    }
+    if(!wx){
+      if(downloadBlob(blob, filename)) toast('已保存到「下载」文件夹');
+      return;
+    }
+    toast('请长按上方图片 → 保存到相册');
+  }, 'image/png');
+}
+
+/* =========================================================
+   9. 状态
+   ========================================================= */
+let cur = 0;
+let finished = false;
+const ans = new Array(QUESTIONS.length).fill(null);
+let currentCode = null;
+let lastScores = null, lastT = null, lastNo = '', lastDate = '';
+let longCanvas = null;
+
+const show = id => {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  $(id).classList.add('on');
+  window.scrollTo(0,0);
+};
+function makeReportNo(){
+  const n=new Date();
+  return 'MS-'+n.getFullYear()+String(n.getMonth()+1).padStart(2,'0')+String(n.getDate()).padStart(2,'0')
+    +'-'+String(Math.floor(Math.random()*9000)+1000);
+}
+function todayStr(){
+  const n=new Date();
+  return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');
+}
+
+/* =========================================================
+   10. 门禁流程
+   ========================================================= */
+function fmtCodeInput(raw){
+  let v = String(raw||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);
+  if(v.indexOf('SJ')===0 && v.length>2) v = 'SJ-' + v.slice(2);
+  return v;
+}
+function gateMsg(txt, ok){
+  const el = $('gate-msg');
+  el.textContent = txt || '';
+  el.className = 'gate-msg' + (ok ? ' ok' : '');
+}
+function enterIntro(){
+  const r = remainOf(currentCode);
+  const b = $('remain-badge');
+  if(r > 0){
+    b.className = 'remain';
+    b.innerHTML = '<i></i><span>剩余可测次数 '+r+' 次</span>';
+    $('btn-start').textContent = '开始测评';
+    $('btn-start').disabled = false;
+  } else {
+    b.className = 'remain zero';
+    b.innerHTML = '<i></i><span>这个密码的 3 次机会已用完</span>';
+    $('btn-start').textContent = '次数已用完，请换一个密码';
+    $('btn-start').disabled = true;
+  }
+  show('scr-intro');
+}
+let unlocking = false;
+function tryUnlock(){
+  const key = normCode($('code-input').value);
+  if(!key){ gateMsg('请输入测评密码'); shakeGate(); return; }
+  if(unlocking) return;
+  if(!apiReady()){ gateMsg(reasonText({reason:'offline'})); shakeGate(); return; }
+
+  unlocking = true;
+  const btn = $('btn-unlock');
+  const old = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = '验证中…';
+  gateMsg('');
+
+  verifyCode(key).then(function(r){
+    unlocking = false;
+    btn.disabled = false;
+    btn.textContent = old;
+
+    if(!r.ok){ gateMsg(reasonText(r)); shakeGate(); return; }
+    currentCode = key;
+    currentRemain = Number(r.remain) || 0;
+    try { Store.set(ACCESS.keyCode, key); } catch(e){}
+    gateMsg('密码正确，剩余 ' + currentRemain + ' 次机会', true);
+    setTimeout(enterIntro, 320);
+  });
+}
+function shakeGate(){
+  const el = $('code-input');
+  el.classList.remove('shake');
+  void el.offsetWidth;
+  el.classList.add('shake');
+}
+
+/* =========================================================
+   11. 结果页渲染
+   ========================================================= */
+function renderReport(scores, t, opt){
+  opt = opt || {};
+  const type = TYPES[t.key];
+  const avg = t.avg;
+  const sorted = DIMS.map(d=>({d:d, v:scores[d.key]})).sort((a,b)=>a.v-b.v);
+  const abn = sorted.filter(x=>x.v < 60).slice(0,3);
+
+  lastScores = scores; lastT = t;
+  lastNo = makeReportNo(); lastDate = todayStr();
+  longCanvas = null;
+
+  let html='';
+  html += '<div class="rhead"><h2>精神状态体检报告</h2>'+
+          '<div class="meta">报告编号 '+lastNo+' · 检测时间 '+lastDate+'</div></div>';
+  html += '<div class="dx"><div class="lb">综 合 诊 断</div>'+
+          '<div class="nm">'+type.name+'</div>'+
+          '<div class="tl">'+type.tag+'</div>'+
+          '<div class="score">综合评分 <b>'+avg+'</b> / 100</div></div>';
+  html += '<div class="sec-t">指标雷达</div><div class="radar-wrap"><canvas id="radar"></canvas></div>';
+
+  html += '<div class="sec-t">指标明细</div><table class="idx"><thead><tr>'+
+          '<th>检测项</th><th style="text-align:right">数值</th><th>参考值</th><th>状态</th></tr></thead><tbody>';
+  DIMS.forEach(d=>{
+    const v=scores[d.key], st=statusOf(v);
+    html += '<tr><td><span class="nmcell">'+d.name+'</span>'+
+            '<div class="bar-mini"><i style="width:'+v+'%;background:'+st.color+'"></i></div></td>'+
+            '<td class="n" style="color:'+st.color+'">'+v+'</td>'+
+            '<td><span class="ref">60 – 100</span></td>'+
+            '<td><span class="pill '+st.cls+'">'+st.txt+'</span></td></tr>';
+  });
+  html += '</tbody></table>';
+
+  if(abn.length){
+    html += '<div class="sec-t">重点关注项</div>';
+    abn.forEach(({d,v})=>{
+      const st=statusOf(v);
+      html += '<div class="abn"><div class="ah">'+
+              '<span class="lv" style="background:'+st.bg+';color:'+st.color+'">'+st.txt+'</span>'+
+              '<span class="nm">'+d.name+'</span>'+
+              '<span class="vl" style="color:'+st.color+'">'+v+'</span></div>'+
+              '<p>'+d.note+'</p>'+
+              '<div class="th"><b>理论依据 · </b>'+d.theory+'</div></div>';
+    });
+  } else {
+    html += '<div class="sec-t">重点关注项</div><div class="abn"><p>本次检测七项指标均在参考区间内，没有需要重点关注的异常项。</p></div>';
+  }
+
+  html += '<div class="sec-t">诊断解读</div>';
+  html += '<div class="abn" style="background:#fff"><p>'+type.body.replace(/\n/g,'</p><p>')+'</p></div>';
+  html += '<div class="sec-t">医生建议</div><ul class="advice">';
+  type.advice.forEach(a=>{ html += '<li>'+a+'</li>'; });
+  html += '</ul>';
+  html += '<div class="quote">'+type.line+'<span>——你的精神状态体检结论</span></div>';
+
+  /* ---- 保存与分享 ---- */
+  html += '<div class="sec-t">保存与分享</div>'+
+          '<div class="actions">'+
+            '<button class="btn" id="btn-save">保存测试结果（长图）</button>'+
+            '<div class="act-row">'+
+              '<button class="btn ghost" id="btn-link">复制结果链接</button>'+
+              '<button class="btn ghost" id="btn-again">再测一次</button>'+
+            '</div>'+
+            '<button class="btn gold" id="btn-offer">好评有礼 · 返现 '+CONFIG.cashback+' 元</button>'+
+            '<div class="btn-note">「保存测试结果」会把整份报告生成一张长图存到相册；「结果链接」别人点开就能看到你的报告</div>'+
+          '</div>'+
+          '<div class="poster-box" id="poster-box" style="display:none">'+
+            '<img id="poster-img" alt="精神状态体检报告">'+
+            '<div class="poster-tip" id="poster-tip"></div>'+
+            '<button class="btn ghost" id="btn-save2">再存一次 / 下载到本地</button>'+
+          '</div>';
+
+  html += '<div class="sec-t">指标说明</div>';
+  DIMS.forEach(d=>{
+    html += '<details><summary>'+d.name+'</summary><div class="dc"><b>'+d.theory+'</b><br>'+d.note+'</div></details>';
+  });
+  html += '<div class="disc"><b>重要说明：</b>本报告由自研测评模型生成，7 项指标参考了职业倦怠、快感缺失、反刍思维、知觉压力、心理韧性等心理学研究概念，但<b>题目与参考值为本次自研，不是临床量表，不能用于任何医学诊断</b>。报告仅供自我觉察参考。如果你长期情绪低落、失眠、对一切失去兴趣，或出现伤害自己的想法，请立即联系专业心理或医疗机构。</div>';
+
+  $('report').innerHTML = html;
+
+  const sb = $('sharebar');
+  if(opt.shared){
+    sb.innerHTML = '<div class="sb-t"><b>TA 把这份体检报告分享给了你</b>综合评分 '+avg+' · '+type.name+'</div>'+
+                   '<button id="btn-mine">我也测一份</button>';
+    sb.style.display='flex';
+    $('btn-mine').onclick = ()=>{ location.hash=''; show('scr-gate'); };
+  } else { sb.innerHTML=''; sb.style.display='none'; }
+
+  requestAnimationFrame(()=>{
+    const c = $('radar');
+    if(c) drawRadar(c, scores, Math.min(320, window.innerWidth-80));
+  });
+  bindActions(scores, t, type, avg);
+}
+
+function drawRadar(canvas, scores, size){
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = size*dpr; canvas.height = size*dpr;
+  canvas.style.width = size+'px'; canvas.style.height = size+'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  drawRadarAt(ctx, size/2, size/2+4, size/2-46, DIMS, scores, { onDark:false, fs:12.5, pad:22 });
+}
+
+function buildLongImage(){
+  if(longCanvas) return longCanvas;
+  const tmp = document.createElement('canvas');
+  tmp.width = 750; tmp.height = 8000;
+  const h = drawLongReport(tmp.getContext('2d'), {
+    dims: DIMS, scores: lastScores, type: TYPES[lastT.key], avg: lastT.avg,
+    no: lastNo, date: lastDate, qr: QR(baseUrl()),
+    brand: CONFIG.brand, site: CONFIG.site, statusOf: statusOf
+  });
+  const out = document.createElement('canvas');
+  out.width = 750; out.height = h;
+  const octx = out.getContext('2d');
+  octx.fillStyle = '#ffffff'; octx.fillRect(0,0,750,h);
+  octx.drawImage(tmp, 0, 0, 750, h, 0, 0, 750, h);
+  longCanvas = out;
+  return out;
+}
+
+function bindActions(scores, t, type, avg){
+  function showPreview(){
+    const c = buildLongImage();
+    const box = $('poster-box');
+    $('poster-img').src = c.toDataURL('image/png');
+    box.style.display='block';
+    $('poster-tip').innerHTML = isWeChat()
+      ? '<b>长按上方图片</b>，选择「保存图片」即可存进手机相册'
+      : '点下方按钮可保存到相册 / 下载文件夹；也可以<b>长按图片</b>直接保存';
+    if(box.scrollIntoView) box.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+  function doSave(){
+    const c = buildLongImage();
+    showPreview();
+    saveImage(c, CONFIG.brand+'_精神状态体检报告_'+type.name+'.png');
+  }
+  $('btn-save').onclick = doSave;
+  $('btn-save2').onclick = doSave;
+
+  $('btn-link').onclick = ()=>{
+    copyWith(resultLink(scores), '结果链接已复制，发给朋友就能看到你的报告', '长按下面的链接，全选复制发给朋友');
+  };
+
+  $('btn-offer').onclick = ()=> openModal('modal-offer');
+
+  $('btn-again').onclick = async ()=>{
+    location.hash = '';
+    longCanvas = null;
+    if(!currentCode){ show('scr-gate'); return; }
+    resetQuiz();
+    /* 以服务端为准刷新剩余次数（刚扣过次，本地值可能还没落） */
+    if(apiReady()){
+      const r = await verifyCode(currentCode);
+      if(r && r.ok) currentRemain = Number(r.remain) || 0;
+      else if(r && (r.reason === 'exhausted' || r.reason === 'invalid' || r.reason === 'disabled')) currentRemain = 0;
+    }
+    enterIntro();
+    if(currentRemain <= 0) toast('这个密码的 3 次测评机会已用完', true);
+  };
+}
+
+/* =========================================================
+   12. 答题流程
+   ========================================================= */
+function resetQuiz(){
+  cur = 0;
+  ans.fill(null);
+  finished = false;
+  const box = $('poster-box');
+  if(box) box.style.display='none';
+}
+function renderQ(){
+  const q = QUESTIONS[cur];
+  const dim = DIMS.find(d=>d.key===q.d);
+  $('q-dim').textContent = dim.name;
+  $('q-text').textContent = q.q;
+  $('prog-bar').style.width = (cur/QUESTIONS.length*100)+'%';
+  $('prog-cnt').textContent = (cur+1)+' / '+QUESTIONS.length;
+  $('btn-back').disabled = cur===0;
+  const box = $('q-opts'); box.innerHTML='';
+  q.o.forEach((op,i)=>{
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'opt' + (ans[cur]===i?' sel':'');
+    b.innerHTML = '<span class="dot"></span><span>'+op.t+'</span>';
+    b.onclick = ()=>{
+      ans[cur]=i;
+      document.querySelectorAll('#q-opts .opt').forEach((e,j)=>e.classList.toggle('sel', j===i));
+      setTimeout(()=>{
+        if(cur < QUESTIONS.length-1){ cur++; renderQ(); }
+        else finish();
+      }, 170);
+    };
+    box.appendChild(b);
+  });
+}
+function finish(){
+  if(finished) return;                 /* 幂等保护：避免重复扣次 */
+  finished = true;
+  $('prog-bar').style.width='100%';
+  const scores = computeScores(ans);
+  const t = pickType(scores);
+  renderReport(scores, t, {shared:false});
+  show('scr-result');
+  /* 报告先渲染，扣次在后台完成（服务端计次，清缓存也绕不过） */
+  if(currentCode){
+    consumeCode(currentCode, t.key, t.avg).then(function(r){
+      if(r && r.ok) currentRemain = Number(r.remain) || 0;
+      else if(r && (r.reason === 'exhausted' || r.reason === 'invalid' || r.reason === 'disabled')) currentRemain = 0;
+      /* 网络失败：保留原值，不打断用户看报告 */
+    });
+  }
+}
+
+/* =========================================================
+   13. 事件绑定与启动
+   ========================================================= */
+$('gate-brand').textContent = CONFIG.brand;
+$('of-wechat').textContent = CONFIG.wechat;
+
+const codeEl = $('code-input');
+codeEl.addEventListener('input', ()=>{ codeEl.value = fmtCodeInput(codeEl.value); gateMsg(''); });
+codeEl.addEventListener('keydown', e=>{ if(e.key === 'Enter') tryUnlock(); });
+$('btn-unlock').onclick = tryUnlock;
+
+$('btn-start').onclick = ()=>{
+  if(!currentCode){ show('scr-gate'); return; }
+  if(remainOf(currentCode) <= 0){ toast('这个密码的 3 次测评机会已用完', true); return; }
+  resetQuiz(); renderQ(); show('scr-quiz');
+};
+$('btn-back').onclick = ()=>{ if(cur>0){ cur--; renderQ(); } };
+
+$('btn-copy-wx').onclick = ()=>{
+  copyWith(CONFIG.wechat, '客服微信号已复制，去微信添加吧', '长按下面的微信号，全选复制');
+};
+
+document.querySelectorAll('[data-close]').forEach(el=>{
+  el.onclick = ()=> closeModal(el.getAttribute('data-close'));
+});
+document.querySelectorAll('.modal').forEach(m=>{
+  m.onclick = e => { if(e.target === m) m.classList.remove('on'); };
+});
+
+/* 启动 */
+(function boot(){
+  const pre = parseHash();
+  if(pre){
+    const t = pickType(pre);
+    renderReport(pre, t, {shared:true});
+    show('scr-result');
+    return;
+  }
+  /* 老用户回访：拿上次的密码去服务端复核（次数以服务端为准） */
+  const saved = normCode(Store.get(ACCESS.keyCode));
+  if(saved && apiReady()){
+    show('scr-gate');
+    gateMsg('正在恢复上次的测评…');
+    verifyCode(saved).then(function(r){
+      if(r && r.ok){
+        currentCode = saved;
+        currentRemain = Number(r.remain) || 0;
+        gateMsg('');
+        enterIntro();
+      } else {
+        try { Store.set(ACCESS.keyCode, ''); } catch(e){}
+        gateMsg('');
+        show('scr-gate');
+      }
+    });
+    return;
+  }
+  show('scr-gate');
+})();
+</script>
+</body>
+</html>

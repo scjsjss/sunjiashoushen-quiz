@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0f8f7a">
+<title>管理后台 · 孙家瘦身</title>
+<style>
+  :root{
+    --green:#0f8f7a; --green-d:#0a6b5c; --green-l:#2fb99a;
+    --ink:#16211f; --ink2:#4b5b58; --ink3:#8b9a97;
+    --line:#e3eae8; --bg:#f4f7f6; --card:#fff;
+    --red:#d64545; --amber:#c98a12; --blue:#2b6cb0;
+    --r:12px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font:15px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    color:var(--ink);background:var(--bg);
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  button{font-family:inherit;font-size:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  input,select{font-family:inherit;font-size:inherit}
+  a{color:var(--green)}
+
+  /* ---------- 登录 ---------- */
+  #login{
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
+    background:linear-gradient(160deg,#0a6b5c,#2fb99a);
+  }
+  .login-box{width:100%;max-width:360px;background:#fff;border-radius:18px;padding:30px 26px 26px;
+    box-shadow:0 18px 50px rgba(0,0,0,.18)}
+  .login-box h1{margin:0 0 4px;font-size:20px;letter-spacing:.5px}
+  .login-box .sub{margin:0 0 22px;font-size:13px;color:var(--ink3)}
+  .fld{margin-bottom:14px}
+  .fld label{display:block;font-size:12.5px;color:var(--ink2);margin-bottom:6px;font-weight:600}
+  .fld input{width:100%;height:44px;padding:0 13px;border:1.5px solid var(--line);border-radius:10px;
+    background:#fbfcfc;outline:none;transition:border-color .15s}
+  .fld input:focus{border-color:var(--green-l);background:#fff}
+  .btn{height:44px;border-radius:10px;font-weight:600;display:inline-flex;align-items:center;
+    justify-content:center;gap:6px;transition:opacity .15s,transform .1s}
+  .btn:active{transform:scale(.985)}
+  .btn[disabled]{opacity:.5;cursor:not-allowed}
+  .btn.primary{background:var(--green);color:#fff;width:100%}
+  .btn.ghost{background:#fff;border:1.5px solid var(--line);color:var(--ink2);padding:0 14px}
+  .btn.sm{height:32px;font-size:13px;border-radius:8px;padding:0 11px}
+  .msg{font-size:13px;color:var(--red);min-height:19px;margin-top:10px;text-align:center}
+  .msg.ok{color:var(--green)}
+
+  /* ---------- 主界面 ---------- */
+  #app{display:none}
+  header{
+    position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);
+    padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top));
+    display:flex;align-items:center;gap:12px;
+  }
+  header .brand{font-weight:700;font-size:16px;flex:1}
+  header .brand small{font-weight:400;color:var(--ink3);font-size:12.5px;margin-left:6px}
+  .wrap{max-width:1080px;margin:0 auto;padding:16px}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:10px;margin-bottom:16px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+  .stat b{display:block;font-size:24px;line-height:1.25;font-weight:700}
+  .stat span{font-size:12.5px;color:var(--ink3)}
+  .stat.g b{color:var(--green)} .stat.r b{color:var(--red)}
+  .stat.a b{color:var(--amber)} .stat.bl b{color:var(--blue)}
+
+  .tabs{display:flex;gap:4px;background:#e9efed;border-radius:10px;padding:4px;margin-bottom:14px}
+  .tabs button{flex:1;height:36px;border-radius:8px;font-size:14px;color:var(--ink2);font-weight:600}
+  .tabs button.on{background:#fff;color:var(--green);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+
+  .panel{display:none} .panel.on{display:block}
+
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  .toolbar input{flex:1;min-width:150px;height:38px;padding:0 12px;border:1.5px solid var(--line);
+    border-radius:9px;background:#fff;outline:none}
+  .toolbar input:focus{border-color:var(--green-l)}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+  .tblwrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{width:100%;border-collapse:collapse;font-size:14px;min-width:720px}
+  th,td{padding:11px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+  th{background:#fafcfb;font-size:12.5px;color:var(--ink2);font-weight:600;position:sticky;top:0}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:#fafcfb}
+  td.code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:600;letter-spacing:.4px}
+  .pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:12px;font-weight:600}
+  .pill.ok{background:#e6f6f2;color:var(--green-d)}
+  .pill.warn{background:#fdf3e0;color:var(--amber)}
+  .pill.dead{background:#fdeaea;color:var(--red)}
+  .pill.off{background:#eef1f0;color:var(--ink3)}
+  .bar{width:64px;height:6px;border-radius:4px;background:#eef1f0;overflow:hidden;display:inline-block;
+    vertical-align:middle;margin-right:7px}
+  .bar i{display:block;height:100%;background:var(--green-l)}
+  .muted{color:var(--ink3);font-size:12.5px}
+  .empty{padding:44px 20px;text-align:center;color:var(--ink3);font-size:14px}
+
+  .dist{margin-top:8px}
+  .drow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+  .drow:last-child{border-bottom:none}
+  .drow .nm{width:104px;font-size:13.5px;flex:none}
+  .drow .track{flex:1;height:9px;background:#eef1f0;border-radius:5px;overflow:hidden}
+  .drow .track i{display:block;height:100%;background:linear-gradient(90deg,var(--green-l),var(--green))}
+  .drow .n{width:74px;text-align:right;font-size:13px;color:var(--ink2);flex:none}
+
+  /* ---------- 弹窗 ---------- */
+  .modal{position:fixed;inset:0;z-index:60;background:rgba(12,26,24,.5);display:none;
+    align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(2px)}
+  .modal.on{display:flex}
+  .mbox{background:#fff;border-radius:16px;width:100%;max-width:420px;max-height:86vh;overflow:auto;
+    padding:22px}
+  .mbox h3{margin:0 0 16px;font-size:17px}
+  .mrow{display:flex;gap:10px;margin-top:18px}
+  .mrow .btn{flex:1}
+
+  .toast{position:fixed;left:50%;bottom:34px;transform:translate(-50%,20px);z-index:90;
+    background:rgba(16,32,29,.94);color:#fff;padding:11px 20px;border-radius:24px;font-size:14px;
+    opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;max-width:86vw;text-align:center}
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+  .toast.bad{background:rgba(150,30,30,.95)}
+
+  .genout{margin-top:14px;max-height:230px;overflow:auto;background:#f7faf9;border:1px solid var(--line);
+    border-radius:10px;padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+    font-size:13.5px;line-height:2;white-space:pre;letter-spacing:.4px}
+
+  @media(max-width:520px){
+    th,td{padding:10px 9px}
+    .stat b{font-size:21px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= 登录 ================= -->
+<section id="login">
+  <div class="login-box">
+    <h1>孙家瘦身 · 管理后台</h1>
+    <p class="sub">测评密码管理与数据统计</p>
+    <div class="fld">
+      <label for="email">管理员邮箱</label>
+      <input id="email" type="email" autocomplete="username" placeholder="you@example.com">
+    </div>
+    <div class="fld">
+      <label for="pwd">密码</label>
+      <input id="pwd" type="password" autocomplete="current-password" placeholder="登录密码">
+    </div>
+    <button class="btn primary" id="btn-login">登 录</button>
+    <div class="msg" id="login-msg"></div>
+  </div>
+</section>
+
+<!-- ================= 主界面 ================= -->
+<section id="app">
+  <header>
+    <div class="brand">孙家瘦身 · 管理后台<small id="hd-email"></small></div>
+    <button class="btn ghost sm" id="btn-reload">刷新</button>
+    <button class="btn ghost sm" id="btn-logout">退出</button>
+  </header>
+
+  <div class="wrap">
+    <div class="stats">
+      <div class="stat"><b id="s-total">–</b><span>密码总数</span></div>
+      <div class="stat g"><b id="s-usable">–</b><span>可用密码</span></div>
+      <div class="stat r"><b id="s-dead">–</b><span>已用完</span></div>
+      <div class="stat a"><b id="s-remain">–</b><span>剩余可测次数</span></div>
+      <div class="stat bl"><b id="s-uses">–</b><span>累计测评次数</span></div>
+      <div class="stat"><b id="s-today">–</b><span>今日测评</span></div>
+    </div>
+
+    <div class="tabs">
+      <button data-tab="codes" class="on">密码管理</button>
+      <button data-tab="stats">使用统计</button>
+    </div>
+
+    <!-- 密码管理 -->
+    <div class="panel on" id="p-codes">
+      <div class="toolbar">
+        <input id="q" placeholder="搜索密码 / 备注…">
+        <button class="btn ghost" id="btn-gen">＋ 生成新密码</button>
+        <button class="btn ghost" id="btn-csv">导出 CSV</button>
+      </div>
+      <div class="card">
+        <div class="tblwrap">
+          <table>
+            <thead><tr>
+              <th>密码</th><th>使用情况</th><th>状态</th><th>备注</th>
+              <th>最后使用</th><th>操作</th>
+            </tr></thead>
+            <tbody id="tb"></tbody>
+          </table>
+        </div>
+        <div class="empty" id="tb-empty" style="display:none">暂无数据</div>
+      </div>
+    </div>
+
+    <!-- 使用统计 -->
+    <div class="panel" id="p-stats">
+      <div class="card" style="padding:16px">
+        <div style="font-weight:600;margin-bottom:4px">诊断类型分布</div>
+        <div class="muted" style="margin-bottom:10px">基于已完成测评的记录统计</div>
+        <div class="dist" id="dist"><div class="empty">暂无测评记录</div></div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <div class="tblwrap">
+          <table>
+            <thead><tr><th>时间</th><th>诊断类型</th><th>综合评分</th></tr></thead>
+            <tbody id="tb-uses"></tbody>
+          </table>
+        </div>
+        <div class="empty" id="uses-empty" style="display:none">暂无测评记录</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 生成密码弹窗 ================= -->
+<div class="modal" id="m-gen">
+  <div class="mbox">
+    <h3>生成新密码</h3>
+    <div class="fld">
+      <label for="g-count">生成数量</label>
+      <input id="g-count" type="number" value="50" min="1" max="500" inputmode="numeric">
+    </div>
+    <div class="fld">
+      <label for="g-max">每个密码可测次数</label>
+      <input id="g-max" type="number" value="3" min="1" max="100" inputmode="numeric">
+    </div>
+    <div class="fld">
+      <label for="g-batch">批次名称（可选）</label>
+      <input id="g-batch" placeholder="例如：10月第二批">
+    </div>
+    <div class="fld">
+      <label for="g-note">备注（可选）</label>
+      <input id="g-note" placeholder="例如：抖音来的客户">
+    </div>
+    <div class="mrow">
+      <button class="btn ghost" data-close="m-gen">取消</button>
+      <button class="btn primary" id="btn-gen-do">生成</button>
+    </div>
+    <div class="genout" id="gen-out" style="display:none"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="config.js"></script>
+<script>
+/* =========================================================
+   管理后台 —— 全部通过 Supabase REST 直连，无第三方依赖
+   ========================================================= */
+const CFG = window.APP_CONFIG || {};
+const SB  = { url: (CFG.supabaseUrl || '').replace(/\/+$/, ''), key: CFG.supabaseAnonKey || '' };
+const KEY_SESSION = 'sj_admin_session_v1';
+
+const TYPES = {
+  full:'满电清醒型', selfco:'低耗自洽型', steady:'均衡稳定型', wave:'间歇性满电型',
+  hidden:'隐性崩溃型', numb:'麻木适应型', overload:'大脑过载型', stress:'高压运转型',
+  social:'社交漏电型', empty:'意义感流失型', strain:'硬撑型', dead:'低电量休眠型',
+  exhaust:'深度耗竭型'
+};
+
+const $ = id => document.getElementById(id);
+let toastTimer;
+function toast(msg, bad){
+  const el = $('toast');
+  el.textContent = msg;
+  el.className = 'toast on' + (bad ? ' bad' : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ el.className = 'toast'; }, 2400);
+}
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => (
+    {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function fmtTime(t){
+  if(!t) return '—';
+  const d = new Date(t);
+  if(isNaN(d)) return '—';
+  const p = n => String(n).padStart(2,'0');
+  return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());
+}
+function apiReady(){
+  return !!(SB.url && SB.key && /^https?:\/\//.test(SB.url) &&
+            SB.url.indexOf('YOUR-PROJECT-REF') < 0 && SB.key.indexOf('YOUR-ANON') < 0);
+}
+
+/* ---------------- 会话 ---------------- */
+let SESSION = null;
+function loadSession(){
+  try { SESSION = JSON.parse(localStorage.getItem(KEY_SESSION) || 'null'); } catch(e){ SESSION = null; }
+  return SESSION;
+}
+function saveSession(s){
+  SESSION = s;
+  try { s ? localStorage.setItem(KEY_SESSION, JSON.stringify(s)) : localStorage.removeItem(KEY_SESSION); } catch(e){}
+}
+async function refreshSession(){
+  if(!SESSION || !SESSION.refresh_token) return false;
+  try{
+    const r = await fetch(SB.url + '/auth/v1/token?grant_type=refresh_token', {
+      method:'POST',
+      headers:{ 'apikey': SB.key, 'Content-Type':'application/json' },
+      body: JSON.stringify({ refresh_token: SESSION.refresh_token })
+    });
+    if(!r.ok) return false;
+    const j = await r.json();
+    if(!j.access_token) return false;
+    saveSession({ access_token:j.access_token, refresh_token:j.refresh_token || SESSION.refresh_token,
+                  email:(j.user && j.user.email) || SESSION.email, expires_at: Date.now() + (j.expires_in||3600)*1000 });
+    return true;
+  }catch(e){ return false; }
+}
+async function signIn(email, password){
+  const r = await fetch(SB.url + '/auth/v1/token?grant_type=password', {
+    method:'POST',
+    headers:{ 'apikey': SB.key, 'Content-Type':'application/json' },
+    body: JSON.stringify({ email, password })
+  });
+  const j = await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(j.error_description || j.msg || j.error || ('登录失败（HTTP ' + r.status + '）'));
+  saveSession({ access_token:j.access_token, refresh_token:j.refresh_token,
+                email:(j.user && j.user.email) || email, expires_at: Date.now() + (j.expires_in||3600)*1000 });
+}
+
+/* ---------------- 数据访问（带 401 自动续期） ---------------- */
+async function req(path, opt, retried){
+  opt = opt || {};
+  opt.headers = Object.assign({
+    'apikey': SB.key,
+    'Authorization': 'Bearer ' + (SESSION && SESSION.access_token || SB.key),
+    'Content-Type': 'application/json'
+  }, opt.headers || {});
+  if(opt.body && typeof opt.body !== 'string') opt.body = JSON.stringify(opt.body);
+
+  const r = await fetch(SB.url + path, opt);
+  if(r.status === 401 && !retried){
+    if(await refreshSession()) return req(path, opt, true);
+    signOut('登录已过期，请重新登录');
+    throw new Error('unauthorized');
+  }
+  if(!r.ok){
+    const txt = await r.text().catch(()=> '');
+    throw new Error('HTTP ' + r.status + ' ' + txt.slice(0, 240));
+  }
+  if(r.status === 204) return null;
+  const txt = await r.text();
+  return txt ? JSON.parse(txt) : null;
+}
+function signOut(msg){
+  saveSession(null);
+  $('app').style.display = 'none';
+  $('login').style.display = 'flex';
+  $('pwd').value = '';
+  if(msg) toast(msg, true);
+}
+
+/* ---------------- 状态 ---------------- */
+let CODES = [], USES = [];
+
+async function loadAll(){
+  const [codes, uses] = await Promise.all([
+    req('/rest/v1/access_codes?select=*&order=id.asc&limit=1000'),
+    req('/rest/v1/code_uses?select=result_type,avg_score,used_at&order=used_at.desc&limit=1000')
+  ]);
+  CODES = codes || [];
+  USES  = uses  || [];
+  renderStats();
+  renderTable();
+  renderDist();
+}
+
+function renderStats(){
+  const total  = CODES.length;
+  const usable = CODES.filter(c => c.active && c.used_count < c.max_uses).length;
+  const dead   = CODES.filter(c => c.used_count >= c.max_uses).length;
+  const remain = CODES.reduce((a,c) => a + Math.max(0, c.max_uses - c.used_count), 0);
+  const uses   = CODES.reduce((a,c) => a + c.used_count, 0);
+  const today  = new Date().toISOString().slice(0,10);
+  const todayN = USES.filter(u => String(u.used_at).slice(0,10) === today).length;
+
+  $('s-total').textContent  = total;
+  $('s-usable').textContent = usable;
+  $('s-dead').textContent   = dead;
+  $('s-remain').textContent = remain;
+  $('s-uses').textContent   = uses;
+  $('s-today').textContent  = todayN;
+}
+
+function statusOf(c){
+  if(!c.active)                        return ['off',  '已停用'];
+  if(c.used_count >= c.max_uses)       return ['dead', '已用完'];
+  if(c.used_count > 0)                 return ['warn', '使用中'];
+  return ['ok', '未使用'];
+}
+
+function renderTable(){
+  const q = ($('q').value || '').trim().toUpperCase();
+  const list = q
+    ? CODES.filter(c => c.code.indexOf(q) >= 0 || String(c.display_code).toUpperCase().indexOf(q) >= 0
+                     || String(c.note || '').toUpperCase().indexOf(q) >= 0
+                     || String(c.batch || '').toUpperCase().indexOf(q) >= 0)
+    : CODES;
+
+  const tb = $('tb');
+  tb.innerHTML = '';
+  $('tb-empty').style.display = list.length ? 'none' : 'block';
+
+  const frag = document.createDocumentFragment();
+  list.forEach(c => {
+    const [cls, txt] = statusOf(c);
+    const pct = Math.min(100, Math.round(c.used_count / c.max_uses * 100));
+    const tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td class="code">' + esc(c.display_code) + '</td>' +
+      '<td><span class="bar"><i style="width:' + pct + '%"></i></span>' +
+        '<span class="muted">' + c.used_count + ' / ' + c.max_uses + '</span></td>' +
+      '<td><span class="pill ' + cls + '">' + txt + '</span></td>' +
+      '<td class="muted">' + esc(c.note || c.batch || '—') + '</td>' +
+      '<td class="muted">' + fmtTime(c.last_used_at) + '</td>' +
+      '<td>' +
+        '<button class="btn ghost sm" data-act="copy"  data-code="' + esc(c.display_code) + '">复制</button> ' +
+        '<button class="btn ghost sm" data-act="reset" data-code="' + esc(c.code) + '">重置</button> ' +
+        '<button class="btn ghost sm" data-act="toggle" data-id="' + c.id + '" data-active="' + (c.active ? '1' : '0') + '">' +
+          (c.active ? '停用' : '启用') + '</button>' +
+      '</td>';
+    frag.appendChild(tr);
+  });
+  tb.appendChild(frag);
+}
+
+function renderDist(){
+  const box = $('dist');
+  if(!USES.length){ box.innerHTML = '<div class="empty">暂无测评记录</div>'; return; }
+  const cnt = {};
+  USES.forEach(u => { if(u.result_type) cnt[u.result_type] = (cnt[u.result_type] || 0) + 1; });
+  const rows = Object.keys(cnt).map(k => [k, cnt[k]]).sort((a,b) => b[1]-a[1]);
+  const max = rows.length ? rows[0][1] : 1;
+  const total = rows.reduce((a,r) => a + r[1], 0) || 1;
+
+  box.innerHTML = rows.map(([k,n]) =>
+    '<div class="drow"><span class="nm">' + esc(TYPES[k] || k) + '</span>' +
+    '<span class="track"><i style="width:' + (n/max*100).toFixed(1) + '%"></i></span>' +
+    '<span class="n">' + n + ' · ' + (n/total*100).toFixed(1) + '%</span></div>'
+  ).join('');
+
+  const tb = $('tb-uses');
+  tb.innerHTML = '';
+  $('uses-empty').style.display = USES.length ? 'none' : 'block';
+  const frag = document.createDocumentFragment();
+  USES.slice(0, 200).forEach(u => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td class="muted">' + fmtTime(u.used_at) + '</td>' +
+                   '<td>' + esc(TYPES[u.result_type] || u.result_type || '—') + '</td>' +
+                   '<td>' + (u.avg_score == null ? '—' : u.avg_score) + '</td>';
+    frag.appendChild(tr);
+  });
+  tb.appendChild(frag);
+}
+
+/* ---------------- 操作 ---------------- */
+async function doReset(code){
+  if(!confirm('把这个密码的使用次数重置为 0？\n\n' + code)) return;
+  const r = await req('/rest/v1/rpc/admin_reset_uses', { method:'POST', body:{ p_code: code } });
+  if(r && r.ok){ toast('已重置 ' + code); await loadAll(); }
+  else toast('重置失败', true);
+}
+async function doToggle(id, active){
+  await req('/rest/v1/access_codes?id=eq.' + encodeURIComponent(id),
+            { method:'PATCH', body:{ active: !active }, headers:{ 'Prefer':'return=minimal' } });
+  toast(active ? '已停用' : '已启用');
+  await loadAll();
+}
+async function doGenerate(){
+  const count = Math.max(1, Math.min(500, parseInt($('g-count').value, 10) || 50));
+  const max   = Math.max(1, Math.min(100, parseInt($('g-max').value, 10) || 3));
+  const batch = $('g-batch').value.trim() || null;
+  const note  = $('g-note').value.trim() || null;
+
+  const btn = $('btn-gen-do');
+  btn.disabled = true; btn.textContent = '生成中…';
+  try{
+    const rows = await req('/rest/v1/rpc/admin_generate_codes', {
+      method:'POST',
+      body:{ p_count: count, p_max_uses: max, p_batch: batch, p_note: note }
+    });
+    const list = (rows || []).map(r => r.display_code);
+    const out = $('gen-out');
+    out.style.display = 'block';
+    out.textContent = list.join('\n');
+    toast('已生成 ' + list.length + ' 个密码');
+    await loadAll();
+  }catch(e){
+    toast('生成失败：' + e.message, true);
+  }finally{
+    btn.disabled = false; btn.textContent = '生成';
+  }
+}
+function exportCsv(){
+  const head = ['密码','已用次数','可测次数','状态','备注','批次','最后使用时间'];
+  const lines = [head.join(',')].concat(CODES.map(c => {
+    const [ , txt] = statusOf(c);
+    const q = s => '"' + String(s == null ? '' : s).replace(/"/g,'""') + '"';
+    return [q(c.display_code), c.used_count, c.max_uses, q(txt), q(c.note), q(c.batch), q(fmtTime(c.last_used_at))].join(',');
+  }));
+  const blob = new Blob(['\ufeff' + lines.join('\r\n')], { type:'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = '孙家瘦身_测评密码_' + new Date().toISOString().slice(0,10) + '.csv';
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ document.body.removeChild(a); URL.revokeObjectURL(url); }, 3000);
+  toast('已导出 CSV');
+}
+async function copyText(t){
+  try{
+    if(navigator.clipboard && window.isSecureContext){ await navigator.clipboard.writeText(t); return true; }
+  }catch(e){}
+  const ta = document.createElement('textarea');
+  ta.value = t; ta.setAttribute('readonly','');
+  ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+  document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, t.length);
+  let ok = false; try{ ok = document.execCommand('copy'); }catch(e){}
+  document.body.removeChild(ta);
+  return ok;
+}
+
+/* ---------------- 事件绑定 ---------------- */
+$('btn-login').onclick = async () => {
+  const email = $('email').value.trim();
+  const pwd   = $('pwd').value;
+  const msg   = $('login-msg');
+  if(!apiReady()){ msg.textContent = '请先在 config.js 里填写 Supabase 配置'; return; }
+  if(!email || !pwd){ msg.textContent = '请输入邮箱和密码'; return; }
+
+  const btn = $('btn-login');
+  btn.disabled = true; btn.textContent = '登录中…';
+  msg.className = 'msg'; msg.textContent = '';
+  try{
+    await signIn(email, pwd);
+    msg.className = 'msg ok'; msg.textContent = '登录成功';
+    await enterApp();
+  }catch(e){
+    msg.textContent = e.message;
+  }finally{
+    btn.disabled = false; btn.textContent = '登 录';
+  }
+};
+$('pwd').addEventListener('keydown', e => { if(e.key === 'Enter') $('btn-login').click(); });
+
+$('btn-logout').onclick = () => { signOut('已退出'); };
+$('btn-reload').onclick = async () => {
+  $('btn-reload').disabled = true;
+  try{ await loadAll(); toast('已刷新'); }catch(e){ toast('刷新失败：' + e.message, true); }
+  finally{ $('btn-reload').disabled = false; }
+};
+$('q').addEventListener('input', renderTable);
+$('btn-csv').onclick = exportCsv;
+$('btn-gen').onclick = () => { $('gen-out').style.display = 'none'; $('gen-out').textContent = ''; openModal('m-gen'); };
+$('btn-gen-do').onclick = doGenerate;
+
+document.querySelectorAll('[data-close]').forEach(el => {
+  el.onclick = () => closeModal(el.getAttribute('data-close'));
+});
+document.querySelectorAll('.modal').forEach(m => {
+  m.onclick = e => { if(e.target === m) m.classList.remove('on'); };
+});
+document.querySelectorAll('.tabs button').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('.tabs button').forEach(x => x.classList.remove('on'));
+    document.querySelectorAll('.panel').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    $('p-' + b.getAttribute('data-tab')).classList.add('on');
+  };
+});
+
+$('tb').addEventListener('click', async e => {
+  const btn = e.target.closest('button[data-act]');
+  if(!btn) return;
+  const act = btn.getAttribute('data-act');
+  try{
+    if(act === 'copy'){
+      const t = btn.getAttribute('data-code');
+      const ok = await copyText(t);
+      toast(ok ? '已复制 ' + t : '复制失败，请手动选择', !ok);
+    } else if(act === 'reset'){
+      await doReset(btn.getAttribute('data-code'));
+    } else if(act === 'toggle'){
+      await doToggle(btn.getAttribute('data-id'), btn.getAttribute('data-active') === '1');
+    }
+  }catch(err){ toast('操作失败：' + err.message, true); }
+});
+
+function openModal(id){ $(id).classList.add('on'); }
+function closeModal(id){ $(id).classList.remove('on'); }
+
+/* ---------------- 启动 ---------------- */
+async function enterApp(){
+  $('login').style.display = 'none';
+  $('app').style.display = 'block';
+  $('hd-email').textContent = SESSION && SESSION.email ? '（' + SESSION.email + '）' : '';
+  try{
+    await loadAll();
+  }catch(e){
+    toast('数据加载失败：' + e.message, true);
+  }
+}
+(async function boot(){
+  if(!apiReady()){
+    $('login-msg').textContent = '请先在 config.js 里填写 Supabase 配置';
+    return;
+  }
+  loadSession();
+  if(SESSION && SESSION.access_token){
+    if(!SESSION.expires_at || SESSION.expires_at - 60000 > Date.now() || await refreshSession()){
+      await enterApp();
+      return;
+    }
+    saveSession(null);
+  }
+  $('login').style.display = 'flex';
+})();
+</script>
+</body>
+</html>
