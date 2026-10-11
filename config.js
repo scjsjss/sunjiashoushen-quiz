@@ -13,10 +13,10 @@
    ========================================================================= */
 window.APP_CONFIG = {
 
-  /* ===== ↓↓↓ 填这两项 ↓↓↓ ===== */
-  supabaseUrl:     'https://YOUR-PROJECT-REF.supabase.co',
-  supabaseAnonKey: 'YOUR-ANON-PUBLIC-KEY',
-  /* ===== ↑↑↑ 填这两项 ↑↑↑ ===== */
+  /* ===== ↓↓↓ 后端地址（已自动填好，一般不用改） ↓↓↓ ===== */
+  supabaseUrl:     'https://phlrezyalylpsvcmcmes.supabase.co',
+  supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBobHJlenlhbHlscHN2Y21jbWVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNDA4NjIsImV4cCI6MjEwMDcxNjg2Mn0.7z5JkAhmGq3KPKORlkUkt7VUcW85ii9HBSC6O5W4bVo',
+  /* ===== ↑↑↑ 后端地址 ↑↑↑ ===== */
 
 
   /* ===== 品牌与联系方式（已按你的信息填好） ===== */

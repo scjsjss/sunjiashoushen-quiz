@@ -97,7 +97,9 @@ begin
 end $$;
 
 -- 扣次（完成一次测评时调用）。用 FOR UPDATE 行锁防止并发重复扣次。
-create or replace function public.consume_code(p_code text, p_type text default null, p_avg integer default null)
+-- 注意：先删掉旧版「p_avg 为 integer」的函数签名，避免 PostgREST 出现重载歧义。
+drop function if exists public.consume_code(text, text, integer);
+create or replace function public.consume_code(p_code text, p_type text default null, p_avg numeric default null)
 returns json
 language plpgsql
 security definer
@@ -128,15 +130,15 @@ begin
    where id = r.id;
 
   insert into public.code_uses (code_id, result_type, avg_score)
-  values (r.id, nullif(p_type, ''), p_avg);
+  values (r.id, nullif(p_type, ''), round(p_avg)::integer);
 
   return json_build_object('ok', true, 'remain', r.max_uses - r.used_count - 1, 'max', r.max_uses);
 end $$;
 
 revoke all on function public.verify_code(text)                        from public;
-revoke all on function public.consume_code(text, text, integer)        from public;
+revoke all on function public.consume_code(text, text, numeric)        from public;
 grant execute on function public.verify_code(text)                     to anon, authenticated;
-grant execute on function public.consume_code(text, text, integer)     to anon, authenticated;
+grant execute on function public.consume_code(text, text, numeric)     to anon, authenticated;
 
 -- ---------------------------------------------------------------------------
 -- 4. 管理后台专用接口（必须已登录）
